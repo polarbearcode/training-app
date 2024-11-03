@@ -44,3 +44,5 @@ Sketch/
 auth.config.ts
 middleware.ts
 pnpm-lock.yaml
+auth.ts
+api/
