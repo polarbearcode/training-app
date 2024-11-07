@@ -1,7 +1,9 @@
 /** Landing page */
 import Login from '@/app/components/login';
-import { auth } from '@/auth'
+import { auth, signOut } from '@/auth'
 import SignIn from './components/signin';
+import { PowerIcon } from '@heroicons/react/16/solid';
+import CredentialsSignInComp from './components/CredentialsSignInComp';
 
 export default async function Home() {
   const session = await auth()
@@ -11,7 +13,12 @@ export default async function Home() {
        <h1 className="text-2xl">Ultimate Training App</h1>
       
       <SignIn></SignIn>
+      <button className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5" type="submit">
+        <a href="/login">Sign In</a>
+      </button>
       
+  
+
       </main>
       <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
         
