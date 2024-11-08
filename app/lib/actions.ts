@@ -70,7 +70,7 @@ export async function registerUser(
             VALUES (${email}, ${hashedPassword})
             ON CONFLICT (email) DO NOTHING;
             `
-        return {};
+        return {}; // need to return something for useActionState
         } catch (error) {
             return {message: 'User could not be created'};
         }
