@@ -1,8 +1,6 @@
 /** Login form for basic credentials login */
 'use client';
 
-import { signIn } from '@/auth';
-import { AuthError } from 'next-auth';
 import { useActionState } from 'react';
 import { authenticate } from '@/app/lib/actions'
 
