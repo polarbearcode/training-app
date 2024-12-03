@@ -31,9 +31,10 @@ export default function SignUpForm() {
                             id="email"
                             name="email"
                             type="string"
-                            className="ml-2"
+                            className={`ml-2 ${state.message != null ? 'border-red-500 border-2' : ''}`}
                         />
                     </div>
+                    
 
                     {/* User password*/}
                     <div className="mb-4">
@@ -44,6 +45,12 @@ export default function SignUpForm() {
                             type="string"
                             className="ml-2"
                         />
+                    </div>
+                    {/* If there is an error in sql*/}
+                    <div id="form-error" aria-live="polite" aria-atomic="true">
+                        {state.message && 
+                            <p>{state.message}</p>
+                        }
                     </div>
                     <button type="submit">Register</button>
                 </form>
