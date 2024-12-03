@@ -1,14 +1,15 @@
 'use server';
-import { signIn } from '@/auth';
+import { signIn } from '../../auth';
 import { AuthError } from 'next-auth';
 import { db } from '@vercel/postgres';
 import { z } from 'zod';
 import bcrypt  from 'bcryptjs';
 
-const client = await db.connect() // connect to database
+
 
 /** Validation for registration form */
 const UserFormSchema = z.object({
+    name: z.string(),
     email: z.string(),
     password: z.string()
 })
@@ -16,6 +17,7 @@ const UserFormSchema = z.object({
 /** State for login and signup forms */
 export type UserState = {
     errors?: {
+        name?: string[]
         email?: string[];
         password?: string[];
     }, 
@@ -53,28 +55,34 @@ export async function registerUser(
     prevState: UserState,
     formData: FormData
 ){
+  
 
     const validatedFields = UserFormSchema.safeParse({
+        name: formData.get('name'),
         email : formData.get('email'),
         password: formData.get('password')
     });
 
 
     if (validatedFields.success) {
+        const name = validatedFields.data?.name
         const email = validatedFields.data?.email;
         const password = validatedFields.data?.password;
         const hashedPassword = await bcrypt.hash(password, 10);
         try {
+            const client = await db.connect() // connect to database
             await client.sql`
-            INSERT INTO training_users (email, password)
-            VALUES (${email}, ${hashedPassword})
-            ON CONFLICT (email) DO NOTHING;
+            INSERT INTO traininguser (name, email, password)
+            VALUES (${name}, ${email}, ${hashedPassword})
             `
         return {}; // need to return something for useActionState
         } catch (error) {
-            return {message: 'User could not be created'};
+          console.log("82");
+            return {message: 'User could not be created. Email duplicated.'};
         }
+
     } else {
+      console.log("87");
         return {
             errors: validatedFields.error.flatten().fieldErrors,
             message: 'Missig fields'
