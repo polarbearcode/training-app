@@ -4,6 +4,7 @@ import { AuthError } from 'next-auth';
 import { db } from '@vercel/postgres';
 import { z } from 'zod';
 import bcrypt  from 'bcryptjs';
+import { redirect } from 'next/navigation'
 
 
 
@@ -43,6 +44,8 @@ export async function authenticate( // called in the login form CredentialsSignI
         }
       }
       throw error;
+    } finally {
+      redirect("/profile");
     }
   }
  
@@ -77,12 +80,10 @@ export async function registerUser(
             `
         return {}; // need to return something for useActionState
         } catch (error) {
-          console.log("82");
-            return {message: 'User could not be created. Email duplicated.'};
+          return {message: 'User could not be created. Email duplicated.'}; // if there are any sql errors
         }
 
-    } else {
-      console.log("87");
+    } else { // if there are validation errors
         return {
             errors: validatedFields.error.flatten().fieldErrors,
             message: 'Missig fields'
