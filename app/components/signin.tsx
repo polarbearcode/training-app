@@ -1,5 +1,5 @@
 /** Sign in with Github component */
-import { signIn } from "@/auth"
+import { signIn } from "../../auth"
  
 export default function SignIn() {
   return (
