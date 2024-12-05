@@ -17,7 +17,7 @@ import {
 } from "react";
 
 // Retrieve user session for the app's session context
-export default function SessionProvider({
+export default function CustomSessionProvider({
     children
 }: {
     children: ReactNode;
