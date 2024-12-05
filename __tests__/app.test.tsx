@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom';
 import Page from '../app/page';
-import SignUpForm from '../app/components/SignUpForm';
+import SignUpForm from '../app/components/sign-up-form';
 import { render, screen } from '@testing-library/react'
 
 test('Page', () => {
