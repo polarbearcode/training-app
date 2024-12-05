@@ -46,3 +46,6 @@ middleware.ts
 pnpm-lock.yaml
 auth.ts
 api/
+
+vitest.config.mts
+app/lib/seed
