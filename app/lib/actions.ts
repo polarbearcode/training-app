@@ -30,12 +30,14 @@ export async function authenticate( // called in the login form CredentialsSignI
     prevState: string | undefined,
     formData: FormData,
   ) {
+    let errorOccurred = false;
     try {
     
         /** Sign in using the data from the form */
       await signIn('credentials', formData); // signIn function from NextAuth export in auth.ts
     } catch (error) {
       if (error instanceof AuthError) {
+        errorOccurred = true;
         switch (error.type) {
           case 'CredentialsSignin':
             return 'Invalid credentials';
@@ -45,7 +47,9 @@ export async function authenticate( // called in the login form CredentialsSignI
       }
       throw error;
     } finally {
-      redirect("/profile");
+      if (!errorOccurred) {
+        redirect("/profile"); /* Only redirect if there is no error */
+      }
     }
   }
  

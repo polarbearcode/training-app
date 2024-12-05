@@ -1,9 +1,9 @@
 /** Landing page */
 
 import { auth, signOut } from '../auth'
-import SignIn from './components/signin';
+import SignIn from './components/SignIn';
 import { PowerIcon } from '@heroicons/react/16/solid';
-import CredentialsSignInComp from './components/CredentialsSignInComp';
+import CredentialsSignInComp from './components/credentials-sign-in-comp';
 
 export default async function Home() {
   const session = await auth()
