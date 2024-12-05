@@ -1,6 +1,6 @@
 /** Landing page */
-import Login from '@/app/components/login';
-import { auth, signOut } from '@/auth'
+
+import { auth, signOut } from '../auth'
 import SignIn from './components/signin';
 import { PowerIcon } from '@heroicons/react/16/solid';
 import CredentialsSignInComp from './components/CredentialsSignInComp';
