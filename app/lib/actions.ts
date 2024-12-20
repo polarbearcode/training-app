@@ -4,7 +4,8 @@ import { AuthError } from 'next-auth';
 import { db } from '@vercel/postgres';
 import { z } from 'zod';
 import bcrypt  from 'bcryptjs';
-import { redirect } from 'next/navigation'
+import { redirect } from 'next/navigation';
+import { Http2ServerResponse } from 'http2';
 
 
 
@@ -93,4 +94,12 @@ export async function registerUser(
             message: 'Missig fields'
         }
     }
+}
+
+/** Redirects user to authorize page */
+export async function getStravaActivities() {
+
+  redirect("http://www.strava.com/oauth/authorize?client_id="+ process.env.REACT_APP_STRAVA_CLIENT + 
+        "&response_type=code&redirect_uri=" + process.env.REACT_APP_STRAVA_AUTHORIZE_REDIRECT_URI + "&approval_prompt=force&scope=read");
+ 
 }
