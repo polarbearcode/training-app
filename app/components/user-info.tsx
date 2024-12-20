@@ -9,7 +9,13 @@ export default function UserInfo() {
     const { data: session, status } = useSession(); 
 
     return (
-        <p>Hello {session?.user?.name}</p>
+        <>
+            <p>Hello {session?.user?.name}</p>
+           
+        </>
+       
+
+       
     )
 
 }
