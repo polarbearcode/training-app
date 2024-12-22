@@ -5,7 +5,6 @@ import { db } from '@vercel/postgres';
 import { z } from 'zod';
 import bcrypt  from 'bcryptjs';
 import { redirect } from 'next/navigation';
-import { Http2ServerResponse } from 'http2';
 
 
 
@@ -102,4 +101,33 @@ export async function getStravaActivities() {
   redirect("http://www.strava.com/oauth/authorize?client_id="+ process.env.REACT_APP_STRAVA_CLIENT + 
         "&response_type=code&redirect_uri=" + process.env.REACT_APP_STRAVA_AUTHORIZE_REDIRECT_URI + "&approval_prompt=force&scope=read");
  
+}
+
+/**
+ * Save the access token and refresh token to database after they are retrieved from post request
+ * in api/profile/callback route. 
+ * @param userEmail {string} User's email that they used to login to the website
+ * @param accessToken {string} Strava user access token to pull user data 
+ * @param refreshToken {string}  Strava user refresh token to be used when the access token expires
+ */
+export async function saveStravaUserTokens(userEmail: string, accessToken: string, refreshToken: string) {
+  const accessTokenEncrypted = await bcrypt.hash(accessToken, 10);
+  const refreshTokenEncrypted = await bcrypt.hash(refreshToken, 10);
+
+  try {
+
+    const client = await db.connect();
+
+    const addUserToken = client.sql`
+      INSERT INTO UserToken (email, accessToken, refreshToken)
+      VALUES (${userEmail}, ${accessTokenEncrypted}, ${refreshTokenEncrypted})
+    `
+
+    console.log("Tokens for user: " + userEmail + " updated");
+  } catch (error) {
+    console.log(error);
+  }
+  
+
+
 }
