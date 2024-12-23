@@ -1,25 +1,20 @@
 /** Import Strava workouts page */
-
-import Strava from "next-auth/providers/strava"
-import { signIn } from "../../../auth";
-import { getStravaActivities } from "app/lib/actions";
+import { getStravaUserCodeRedirect } from "app/lib/actions";
 
 
-export default function Page() {
+
+export default async function Page() {
     return (
         <>
         <form
             action = {async() => {
                 "use server"
-                await getStravaActivities();
+                await getStravaUserCodeRedirect();
             }}
         >
             <button type="submit">Signin with Strava</button>
         </form>
-
      
-  
-
         
         </>
         
