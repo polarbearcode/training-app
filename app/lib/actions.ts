@@ -5,6 +5,7 @@ import { db } from '@vercel/postgres';
 import { z } from 'zod';
 import bcrypt  from 'bcryptjs';
 import { redirect } from 'next/navigation';
+import {default as strava, Strava} from 'strava-v3';
 
 
 
@@ -96,38 +97,37 @@ export async function registerUser(
 }
 
 /** Redirects user to authorize page */
-export async function getStravaActivities() {
+export async function getStravaUserCodeRedirect() {
 
   redirect("http://www.strava.com/oauth/authorize?client_id="+ process.env.REACT_APP_STRAVA_CLIENT + 
-        "&response_type=code&redirect_uri=" + process.env.REACT_APP_STRAVA_AUTHORIZE_REDIRECT_URI + "&approval_prompt=force&scope=read");
+        "&response_type=code&redirect_uri=" + process.env.REACT_APP_STRAVA_AUTHORIZE_REDIRECT_URI + "&approval_prompt=force&scope=activity:read");
  
 }
 
 /**
- * Save the access token and refresh token to database after they are retrieved from post request
- * in api/profile/callback route. 
- * @param userEmail {string} User's email that they used to login to the website
- * @param accessToken {string} Strava user access token to pull user data 
- * @param refreshToken {string}  Strava user refresh token to be used when the access token expires
+ * Get all Strava activities from the user and save it to a database??
+ * @param access_token {string} access token received after authorization from exchaning user code
+ * @param athlete_id  {string} athelte id from Strava response after authorization
  */
-export async function saveStravaUserTokens(userEmail: string, accessToken: string, refreshToken: string) {
-  const accessTokenEncrypted = await bcrypt.hash(accessToken, 10);
-  const refreshTokenEncrypted = await bcrypt.hash(refreshToken, 10);
-
+export async function getStravaActivities(access_token: string, athlete_id: string) {
   try {
-
-    const client = await db.connect();
-
-    const addUserToken = client.sql`
-      INSERT INTO UserToken (email, accessToken, refreshToken)
-      VALUES (${userEmail}, ${accessTokenEncrypted}, ${refreshTokenEncrypted})
-    `
-
-    console.log("Tokens for user: " + userEmail + " updated");
+    const payload = await strava.athlete.listActivities({access_token: access_token, id: athlete_id});
+    return {message: "Retrieved list of activities"};
   } catch (error) {
-    console.log(error);
+    return {error: "Could not retrive activities"};
   }
-  
 
+}
+
+/**
+ * Save the runs from a list of activities to the database
+ * @param payload {any} List of Strava activities returned by listActivities
+ */
+async function saveRuns(payload: Object[]) {
+  const client = await db.connect();
+
+  for (let i = 0; i < payload.length; i++) {
+
+  }
 
 }
