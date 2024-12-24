@@ -3,13 +3,13 @@
  */
 import { NextApiRequest, NextApiResponse } from 'next';
 import axios from 'axios';
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { getStravaActivities } from 'app/lib/actions';
 
 
-export async function GET(req: NextApiRequest, res: NextApiResponse) {  
+export async function GET(req: NextRequest) {  
 
-  console.log(res);
+  
  
   //const session = await auth();
 
