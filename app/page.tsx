@@ -1,10 +1,9 @@
 /** Landing page */
 
-import { auth, signOut } from '../auth'
+import { auth} from '../auth'
 import SignIn from './components/github-sign-in';
 import SignInStrava from './components/strava-sign-in';
-import { PowerIcon } from '@heroicons/react/16/solid';
-import CredentialsSignInComp from './components/credentials-sign-in-comp';
+
 
 export default async function Home() {
   const session = await auth()

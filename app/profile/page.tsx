@@ -1,7 +1,6 @@
 
 import UserInfo from "app/components/user-info";
-import { signOut } from "../../auth";
-import { PowerIcon } from "@heroicons/react/16/solid";
+
 
 
 /** User profile page when they log in */
