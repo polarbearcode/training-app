@@ -14,8 +14,6 @@ export function processDate(dateString: string): {year: number, month: number, d
     let matchMonth: number = 0;
     let matchDay: number = 0;
 
-
-
     for (const match of dateString.matchAll(dateRegex)) {
     
         matchYear = parseInt(match[1]);
