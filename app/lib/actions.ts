@@ -8,6 +8,7 @@ import { redirect } from 'next/navigation';
 import {default as strava} from 'strava-v3';
 import { processDate } from './utils';
 import { auth } from '../../auth';
+import { StravaActivity } from './definitions';
 
 
 
@@ -129,7 +130,7 @@ export async function getStravaActivities(access_token: string, athlete_id: stri
  * Save the runs from a list of activities to the database
  * @param payload    {Array}    list of Strava activities returned by listActivities
  */
-async function saveRuns(payload: Array<any>) {
+async function saveRuns(payload: Array<StravaActivity>) {
   const client = await db.connect();
 
   for (let i = 0; i < payload.length; i++) {
@@ -142,7 +143,7 @@ async function saveRuns(payload: Array<any>) {
 
 }
 
-async function uploadActivityToDB(activity: Record<string, any>, client: VercelPoolClient) {
+async function uploadActivityToDB(activity: StravaActivity, client: VercelPoolClient) {
 
   /** Get user email */
   const session = await auth();
