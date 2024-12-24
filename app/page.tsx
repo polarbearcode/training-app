@@ -1,6 +1,5 @@
 /** Landing page */
 
-import { auth} from '../auth'
 import SignIn from './components/github-sign-in';
 import SignInStrava from './components/strava-sign-in';
 
