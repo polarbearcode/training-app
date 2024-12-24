@@ -7,7 +7,7 @@ import bcrypt  from 'bcryptjs';
 import { redirect } from 'next/navigation';
 import {default as strava} from 'strava-v3';
 import { processDate } from './utils';
-import { act } from 'react';
+import { auth } from '../../auth';
 
 
 
@@ -87,6 +87,7 @@ export async function registerUser(
             `
         return {}; // need to return something for useActionState
         } catch (error) {
+          console.log(error);
           return {message: 'User could not be created. Email duplicated.'}; // if there are any sql errors
         }
 
@@ -114,9 +115,11 @@ export async function getStravaUserCodeRedirect() {
 export async function getStravaActivities(access_token: string, athlete_id: string) {
   try {
     const payload = await strava.athlete.listActivities({access_token: access_token, id: athlete_id});
+    console.log(payload[0]);
     saveRuns(payload);
     return {message: "Retrieved list of activities"};
   } catch (error) {
+    console.log(error;)
     return {error: "Could not retrive activities"};
   }
 
@@ -124,9 +127,9 @@ export async function getStravaActivities(access_token: string, athlete_id: stri
 
 /**
  * Save the runs from a list of activities to the database
- * @param payload {any} List of Strava activities returned by listActivities
+ * @param payload    {Array}    list of Strava activities returned by listActivities
  */
-async function saveRuns(payload: any) {
+async function saveRuns(payload: Array<any>) {
   const client = await db.connect();
 
   for (let i = 0; i < payload.length; i++) {
@@ -139,7 +142,11 @@ async function saveRuns(payload: any) {
 
 }
 
-async function uploadActivityToDB(activity: any, client: VercelPoolClient) {
+async function uploadActivityToDB(activity: Record<string, any>, client: VercelPoolClient) {
+
+  /** Get user email */
+  const session = await auth();
+  const email = session?.user?.email;
   const athleteID = activity.athlete.id;
   const activityID = activity.id;
   const activityType = activity.type;
@@ -153,9 +160,9 @@ async function uploadActivityToDB(activity: any, client: VercelPoolClient) {
   try {
     await client.sql`
     INSERT INTO activity (activityID, athleteID, activityType, year, month, day, distance, 
-        totalElevationGain, averageSpeed, maxSpeed, averageCadence, averageHeartrate)
+        totalElevationGain, averageSpeed, maxSpeed, averageCadence, averageHeartrate, email)
     VALUES(${activityID}, ${athleteID}, ${activityType}, ${year}, ${month}, ${day}, ${distance}, 
-            ${totalElevationGain}, ${averageSpeed}, ${maxSpeed}, ${averageCadence}, ${averageHeartrate})
+            ${totalElevationGain}, ${averageSpeed}, ${maxSpeed}, ${averageCadence}, ${averageHeartrate}, ${email})
     ON CONFLICT DO NOTHING; 
   `
   } catch (error) {
