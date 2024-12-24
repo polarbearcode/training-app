@@ -119,7 +119,7 @@ export async function getStravaActivities(access_token: string, athlete_id: stri
     saveRuns(payload);
     return {message: "Retrieved list of activities"};
   } catch (error) {
-    console.log(error;)
+    console.log(error)
     return {error: "Could not retrive activities"};
   }
 
