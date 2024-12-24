@@ -1,7 +1,6 @@
 /** Handles the api/profile/callback route
  * GET function is automatically called
  */
-import { NextApiRequest, NextApiResponse } from 'next';
 import axios from 'axios';
 import { NextRequest, NextResponse } from 'next/server';
 import { getStravaActivities } from 'app/lib/actions';
