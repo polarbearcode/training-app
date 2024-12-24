@@ -1,11 +1,13 @@
 'use server';
 import { signIn } from '../../auth';
 import { AuthError } from 'next-auth';
-import { db } from '@vercel/postgres';
+import { db, VercelPoolClient } from '@vercel/postgres';
 import { z } from 'zod';
 import bcrypt  from 'bcryptjs';
 import { redirect } from 'next/navigation';
-import {default as strava, Strava} from 'strava-v3';
+import {default as strava} from 'strava-v3';
+import { processDate } from './utils';
+import { act } from 'react';
 
 
 
@@ -112,6 +114,7 @@ export async function getStravaUserCodeRedirect() {
 export async function getStravaActivities(access_token: string, athlete_id: string) {
   try {
     const payload = await strava.athlete.listActivities({access_token: access_token, id: athlete_id});
+    saveRuns(payload);
     return {message: "Retrieved list of activities"};
   } catch (error) {
     return {error: "Could not retrive activities"};
@@ -123,11 +126,43 @@ export async function getStravaActivities(access_token: string, athlete_id: stri
  * Save the runs from a list of activities to the database
  * @param payload {any} List of Strava activities returned by listActivities
  */
-async function saveRuns(payload: Object[]) {
+async function saveRuns(payload: any) {
   const client = await db.connect();
 
   for (let i = 0; i < payload.length; i++) {
+    const curActivity = payload[i];
 
+    if (curActivity.type == "Run") {
+      uploadActivityToDB(curActivity, client);
+    }
   }
 
 }
+
+async function uploadActivityToDB(activity: any, client: VercelPoolClient) {
+  const athleteID = activity.athlete.id;
+  const activityID = activity.id;
+  const activityType = activity.type;
+  const {year, month, day} = processDate(activity.start_date);
+  const distance = activity.distance;
+  const totalElevationGain = activity.total_elevation_gain;
+  const averageSpeed = activity.average_speed;
+  const maxSpeed = activity.max_speed;
+  const averageCadence = activity.average_cadence;
+  const averageHeartrate = activity.average_heartrate;
+  try {
+    await client.sql`
+    INSERT INTO activity (activityID, athleteID, activityType, year, month, day, distance, 
+        totalElevationGain, averageSpeed, maxSpeed, averageCadence, averageHeartrate)
+    VALUES(${activityID}, ${athleteID}, ${activityType}, ${year}, ${month}, ${day}, ${distance}, 
+            ${totalElevationGain}, ${averageSpeed}, ${maxSpeed}, ${averageCadence}, ${averageHeartrate})
+    ON CONFLICT DO NOTHING; 
+  `
+  } catch (error) {
+    console.log(error);
+    return {error: "Error inserting new activity into table"};
+  }
+  
+}
+
+
