@@ -7,10 +7,10 @@ import { NextResponse } from 'next/server';
 import { getStravaActivities } from 'app/lib/actions';
 
 
-export async function GET(req: NextApiRequest) {  
+export async function GET(req: NextApiRequest, res: NextApiResponse) {  
 
+  console.log(res);
  
-
   //const session = await auth();
 
   // Figure out next auth, could implement check if token is not expired to save a request
