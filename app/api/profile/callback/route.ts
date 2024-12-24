@@ -26,8 +26,8 @@ export async function GET(req: NextRequest) {
     }
 
     
-    const clientId:string = process.env.STRAVA_CLIENT!;
-    const clientSecret:string =  process.env.STRAVA_SECRET!;
+    const clientId:string = process.env.AUTH_STRAVA_ID!;
+    const clientSecret:string =  process.env.AUTH_STRAVA_SECRET!;
     const redirectUri = 'http://localhost:8000/profile/import';
     const baseURL:string = process.env.BASE_URL!;
 
