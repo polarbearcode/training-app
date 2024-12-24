@@ -26,10 +26,10 @@ export async function GET(req: NextRequest) {
     }
 
     
-    const clientId:string = process.env.REACT_APP_STRAVA_CLIENT!;
-    const clientSecret:string =  process.env.REACT_APP_STRAVA_SECRET!;
+    const clientId:string = process.env.STRAVA_CLIENT!;
+    const clientSecret:string =  process.env.STRAVA_SECRET!;
     const redirectUri = 'http://localhost:8000/profile/import';
-    const baseURL:string = process.env.REACT_APP_BASE_URL!;
+    const baseURL:string = process.env.BASE_URL!;
 
     try {
     

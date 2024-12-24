@@ -103,8 +103,8 @@ export async function registerUser(
 /** Redirects user to authorize page */
 export async function getStravaUserCodeRedirect() {
 
-  redirect("http://www.strava.com/oauth/authorize?client_id="+ process.env.REACT_APP_STRAVA_CLIENT + 
-        "&response_type=code&redirect_uri=" + process.env.REACT_APP_STRAVA_AUTHORIZE_REDIRECT_URI + "&approval_prompt=force&scope=activity:read");
+  redirect("http://www.strava.com/oauth/authorize?client_id="+ process.env.STRAVA_CLIENT + 
+        "&response_type=code&redirect_uri=" + process.env.STRAVA_AUTHORIZE_REDIRECT_URI + "&approval_prompt=force&scope=activity:read");
  
 }
 
