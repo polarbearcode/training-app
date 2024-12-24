@@ -7,7 +7,7 @@ import { NextResponse } from 'next/server';
 import { getStravaActivities } from 'app/lib/actions';
 
 
-export async function GET(req: NextApiRequest, res: NextApiResponse) {  
+export async function GET(req: NextApiRequest) {  
 
  
 
@@ -116,6 +116,7 @@ export async function POST(req: NextApiRequest, res: NextApiResponse) {
       }
 
     } catch (error) {
-        res.status(500).json({ error: 'Internal server error' });
+      console.log(error);
+      res.status(500).json({ error: 'Internal server error' });
     }
 }
