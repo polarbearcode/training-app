@@ -23,6 +23,23 @@ export type StravaActivity = {
     [key:string]: unknown;
 }
 
+export type DatabaseActivity = {
+    activityid: string;
+    athleteid: string;
+    activitytype: string;
+    year: number;
+    month: number;
+    day: number;
+    distance: number;
+    totalelevationgain: number;
+    averagespeed: number;
+    maxspeed: number;
+    averagecadence: number;
+    averageheartrate: number;
+    email: string;
+
+}
+
 /** 
 resource_state: 2,
   athlete: [Object: null prototype] { id: 121786274, resource_state: 1 },
