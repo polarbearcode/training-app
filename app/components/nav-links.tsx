@@ -5,10 +5,14 @@ import { ArrowLeftCircleIcon, HomeIcon } from "@heroicons/react/16/solid";
 import { usePathname } from "next/navigation";
 import clsx from 'clsx';
 import Link from 'next/link';
+import { PlusCircleIcon, PresentationChartBarIcon, RocketLaunchIcon } from "@heroicons/react/24/outline";
 
 const links = [
     {name: 'Profile', href: "/profile", icon: HomeIcon},
-    {name: 'Import', href:"/profile/import", icon: ArrowLeftCircleIcon}
+    {name: 'Import', href:"/profile/import", icon: ArrowLeftCircleIcon},
+    {name: 'Workouts', href: "/profile/workouts", icon: PresentationChartBarIcon},
+    {name: 'Training', href: "/profile/training", icon: RocketLaunchIcon},
+    {name: 'Add Workout', href: "/profile/add", icon: PlusCircleIcon}
 ];
 
 export default function NavLinks() {
