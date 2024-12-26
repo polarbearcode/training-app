@@ -8,7 +8,7 @@ import { redirect } from 'next/navigation';
 import {default as strava} from 'strava-v3';
 import { processDate } from './utils';
 import { auth } from '../../auth';
-import { StravaActivity } from './definitions';
+import { DatabaseActivity, StravaActivity } from './definitions';
 
 
 
@@ -172,5 +172,31 @@ async function uploadActivityToDB(activity: StravaActivity, client: VercelPoolCl
   }
   
 }
+
+/**
+ * Get all the saved activities for a user based on their email
+ * @param email {string} The user's email in the current session
+ */
+export async function getActivitesFromDB(email: string): Promise<DatabaseActivity[]> {
+  try {
+    const client = await db.connect();
+    const activities = await client.sql<DatabaseActivity>`
+      SELECT * FROM activity 
+      WHERE email=${email};
+    `;
+
+   console.log(email); 
+
+    return activities.rows;
+
+
+  } catch (error) {
+    console.log(error);
+    return [];
+  }
+}
+ 
+  
+
 
 
