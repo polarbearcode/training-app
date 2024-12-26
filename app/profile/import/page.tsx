@@ -12,7 +12,7 @@ export default async function Page() {
                 await getStravaUserCodeRedirect();
             }}
         >
-            <button type="submit">Signin with Strava</button>
+            <button type="submit">Import Activites</button>
         </form>
      
         
