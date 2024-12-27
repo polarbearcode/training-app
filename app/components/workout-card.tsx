@@ -4,7 +4,7 @@
 
 import { getActivitesFromDB } from "app/lib/actions"
 import { numberDateToString } from "app/lib/utils"
-import RunCategoryDropdown from "./run-category-dropdown"
+import CategoryDropdown from "./category-dropdown"
 import { useState } from "react"
 
 export default function WorkoutCardWrapper({
@@ -29,13 +29,13 @@ export default function WorkoutCardWrapper({
 
     return (
         <>
-            <div className="roundded0xl bg-gray-50 p-2 shaow-sm">
+            <div className="max-w-sm rounded overflow-hidden shadow-lg border-4 p-3">
                 <p>Distance: {distance}</p>
                 <p>Elevation: {elevation}</p>
                 <p>Average Speed: {averageSpeed}</p>
                 <p>Date: {numberDateToString(year, month, day)}</p>
                 <div>
-                    <RunCategoryDropdown optionsList={["Long Run", "Tempo", "Speed"]} setterFunction = {setRunType}></RunCategoryDropdown>
+                    <CategoryDropdown optionsList={["Long Run", "Tempo", "Speed"]} setterFunction = {setRunType}></CategoryDropdown>
                 </div>
             </div>
         </>
