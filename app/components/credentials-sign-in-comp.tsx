@@ -1,4 +1,6 @@
-/** Login form for basic credentials login */
+/** Login form for basic credentials login
+ * Might delete since considering only using OAuth
+ */
 'use client';
 
 import { useActionState } from 'react';
