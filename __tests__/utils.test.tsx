@@ -1,4 +1,4 @@
-import { processDate } from "app/lib/utils";
+import { processDate, numberDateToString } from "app/lib/utils";
 
 
 test('ProcessedDate Returns year, month, day', () => {
@@ -10,4 +10,9 @@ test('ProcessedDate Returns year, month, day', () => {
     expect(dateObj.year).toBe(2024);
     expect(dateObj.month).toBe(12);
     expect(dateObj.day).toBe(20);
+});
+
+test("Converting date to string", () => {
+    const convertedString = numberDateToString(2024, 12, 20);
+    expect(convertedString).toBe("December 20, 2024");
 })
