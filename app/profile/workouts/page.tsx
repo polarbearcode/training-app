@@ -31,20 +31,19 @@ export default function WorkOuts() {
 
     return (
         <>
-            {activityList.map((activity, i) => {
-                return <WorkoutCard 
-                    distance = {activity.distance}
-                    elevation = {activity.totalelevationgain}
-                    averageSpeed = {activity.averagespeed}
-                    year = {activity.year}
-                    month = {activity.month}
-                    day = {activity.day}
-                    key = {i}
-                />
-
-
-              
-            })}
+            <div className="flex">
+                {activityList.map((activity, i) => {
+                    return <WorkoutCard 
+                        distance = {activity.distance}
+                        elevation = {activity.totalelevationgain}
+                        averageSpeed = {activity.averagespeed}
+                        year = {activity.year}
+                        month = {activity.month}
+                        day = {activity.day}
+                        key = {i}
+                    />
+                })}   
+            </div>
         </>
         
     ) 
