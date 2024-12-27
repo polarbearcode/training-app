@@ -5,8 +5,8 @@ import { Dispatch, SetStateAction } from "react";
   */
 export default function CategoryDropdown({optionsList, setterFunction} : 
     {
-        optionsList: string[], 
-        setterFunction: Dispatch<SetStateAction<string>>
+        optionsList: string[], // parent component specifies options
+        setterFunction: Dispatch<SetStateAction<string>> // a set function from useState
     }
 
  
@@ -16,8 +16,7 @@ export default function CategoryDropdown({optionsList, setterFunction} :
      * Utilize the passed down setterFunction from parent to change state value.
      */
     function changeStateValue() {
-        const e  = document.getElementById("option-selection"); // select the dropdown element
-        console.log((e as HTMLInputElement).value);
+        const e  = document.getElementById("option-selection"); // select the dropdown element in return statement
         setterFunction((e as HTMLInputElement).value); // casting e to HTMLInputElement
     }
 
