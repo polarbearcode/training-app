@@ -12,14 +12,18 @@ import { DatabaseActivity, StravaActivity } from './definitions';
 
 
 
-/** Validation for registration form */
+/** 
+ * Only use if using credentials
+ * Validation for registration form */
 const UserFormSchema = z.object({
     name: z.string(),
     email: z.string(),
     password: z.string()
 })
 
-/** State for login and signup forms */
+/** 
+ * Only use if using credentials
+ * State for login and signup forms */
 export type UserState = {
     errors?: {
         name?: string[]
@@ -30,6 +34,9 @@ export type UserState = {
     message?: string | null 
 }
 
+/**
+ * Only use if using Credentials
+ */
 export async function authenticate( // called in the login form CredentialsSignInComp
     prevState: string | undefined,
     formData: FormData,
@@ -58,6 +65,7 @@ export async function authenticate( // called in the login form CredentialsSignI
   }
  
   /**
+   * Only use if using Credentials
    * Register a user and insert into training_user db
    * @param prevState prev state of the form
    * @param formData  FormData containing name, email, etc.
