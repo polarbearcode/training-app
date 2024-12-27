@@ -1,5 +1,5 @@
 /** Side Bar for navigation
- * Contains links for signout, import
+ * Contains links for signout, import, workouts, training.
  */
 
 

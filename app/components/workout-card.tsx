@@ -1,8 +1,9 @@
 'use client'
 
-/** Display for individual workouts (display in boxes) */
+/** Display for individual workouts (display in boxes) 
+ * Similar to https://v1.tailwindcss.com/components/cards
+*/
 
-import { getActivitesFromDB } from "app/lib/actions"
 import { numberDateToString } from "app/lib/utils"
 import CategoryDropdown from "./category-dropdown"
 import { useState } from "react"

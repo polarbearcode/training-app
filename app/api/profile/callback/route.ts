@@ -1,14 +1,13 @@
 /** Handles the api/profile/callback route
- * GET function is automatically called
+ * GET function is automatically called once the .../api/profile/callback route is called
+ * use this as redirect uri in the redirect function in app/lib/strava-activities
  */
 import axios from 'axios';
 import { NextRequest, NextResponse } from 'next/server';
-import { getStravaActivities } from 'app/lib/actions';
+import { getStravaActivities } from 'app/lib/strava-activities';
 
 
 export async function GET(req: NextRequest) {  
-
-  
  
   //const session = await auth();
 
@@ -16,16 +15,17 @@ export async function GET(req: NextRequest) {
 
 
   if (req.url) {
+    // Get the user's code to exchange for authorization code
     const {searchParams}  = new URL(req.url); 
 
     const code = searchParams.get("code");
 
-
+    // No code in response from Strava (maybe user hit cancel). Add handling.
     if (!code) {
       return NextResponse.json({ error: 'Authorization code required' }, { status: 400 });  
     }
 
-    
+    // Variables needed to make exchange POST request
     const clientId:string = process.env.AUTH_STRAVA_ID!;
     const clientSecret:string =  process.env.AUTH_STRAVA_SECRET!;
     const redirectUri = 'http://localhost:8000/profile/import';
@@ -47,11 +47,11 @@ export async function GET(req: NextRequest) {
       const access_token = response.data.access_token; // user access token
       const athlete_id = response.data.athlete.id;
     
-
+      // Get and upload activities to database
       const processActivities =  await getStravaActivities(access_token, athlete_id);
 
       if (processActivities.error) {
-        return NextResponse.json({ error: 'Failed to exchange code for access token' }, { status: 500 });
+        return NextResponse.json({ error: 'Unable to get activities or unable to put them to database' }, { status: 500 });
       }
 
 

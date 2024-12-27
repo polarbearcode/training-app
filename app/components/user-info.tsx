@@ -1,4 +1,7 @@
-/* User information to display when user is logged in. */
+/* User information to display when user is logged in.
+* Only displaying the name from the session after logging in 
+* from one of the OAuth providers.
+*/
 
 'use client'
 

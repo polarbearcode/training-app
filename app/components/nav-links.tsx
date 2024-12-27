@@ -1,4 +1,4 @@
-/** Links on the sidebar besides signout. Used in SideNav component. */
+/** Links on the sidebar besides signout. Used in SideNav component, where the links are put onto the page. */
 
 'use client'
 import { ArrowLeftCircleIcon, HomeIcon } from "@heroicons/react/16/solid";

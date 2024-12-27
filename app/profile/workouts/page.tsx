@@ -2,7 +2,7 @@
 import CategoryDropdown from "app/components/category-dropdown";
 /** Page to display user activities */
 import WorkoutCard from "app/components/workout-card";
-import { getActivitesFromDB } from "app/lib/actions";
+import { getActivitesFromDB } from "app/lib/strava-activities";
 import { DatabaseActivity } from "app/lib/definitions";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
