@@ -1,6 +1,13 @@
-import { getActivitesFromDB } from "app/lib/actions";
+import { getActivitesFromDB, getStravaActivities } from "app/lib/strava-activities";
 
 test("GetActivities pulls activities by email", async() =>  {
     const activityList = await getActivitesFromDB("user1@example.com");
     expect(activityList.length).toBe(1);
+});
+
+test("Gets error with wrong athlete id", async () => {
+    const accessToken = "change me" //update each test run
+    const athleteID = "123456" //random id
+    const messages = await getStravaActivities(accessToken, athleteID);
+    expect(messages.error).not.toBeNull();
 })
