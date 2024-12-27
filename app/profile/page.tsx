@@ -1,6 +1,6 @@
 
 import UserInfo from "app/components/user-info";
-import { getStravaUserCodeRedirect } from "app/lib/actions";
+import { getStravaUserCodeRedirect } from "app/lib/strava-activities";
 
 
 
