@@ -48,7 +48,7 @@
     ".next/types/**/*.ts",
     "__tests__/app.test.tsx",
     "vitest.config.mts"
-, "app/api/auth/callback.js"  ],
+, "app/api/auth/callback.js", "jest.config.js"  ],
   "exclude": [
     "node_modules"
   ],
