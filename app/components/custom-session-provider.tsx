@@ -1,4 +1,7 @@
 /* Custom session provider to fix issue loging in and useSession not updating until refreshing
+issue was you would need to login and also hit refresh to get to the /profile page for logged in users.
+Use getSession() instead of auth(), then updating session state with setSession
+
 https://github.com/nextauthjs/next-auth/issues/10016
 */
 "use client";
