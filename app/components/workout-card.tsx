@@ -7,6 +7,7 @@
 import { numberDateToString } from "app/lib/utils"
 import CategoryDropdown from "./category-dropdown"
 import { useState } from "react"
+import { analyzeRunType } from "app/lib/ai/run-analysis"
 
 export default function WorkoutCardWrapper({
     distance, 
@@ -25,12 +26,13 @@ export default function WorkoutCardWrapper({
         day: number
     }) {
 
-    const [runType, setRunType] = useState("");
-  
+    const [runType, setRunType] = useState('');
+    const runAnalysisType = analyzeRunType(elevation, distance);
+
 
     return (
         <>
-            <div className="max-w-sm rounded overflow-hidden shadow-lg border-4 p-3">
+            <div className={`max-w-sm rounded overflow-hidden shadow-lg border-4 p-3" ${runAnalysisType === "Hill" ? 'border-orange-300' : '' } ${runAnalysisType === "Long"? 'border-green-300': ''}`}>
                 <p>Distance: {distance}</p>
                 <p>Elevation: {elevation}</p>
                 <p>Average Speed: {averageSpeed}</p>
