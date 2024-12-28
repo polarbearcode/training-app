@@ -16,7 +16,7 @@ export default function WorkOutDisplay({activityList} : {activityList: DatabaseA
 
     return (
         <>
-            <div id="filter">
+            <div id="filter" className="mb-6">
                 {/** Consider making a check box list instead*/}
                 <CategoryDropdown optionsList={["All", "Run", "Soccer"]} setterFunction={setViewCategory} ></CategoryDropdown>
             </div>
