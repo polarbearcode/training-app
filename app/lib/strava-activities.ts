@@ -1,3 +1,4 @@
+'use server'
 /**
  * Contains functions to get Strava activites and upload them to a database.
  */
@@ -23,7 +24,7 @@ export async function getStravaUserCodeRedirect() {
  * @param athlete_id  {string} athelte id from Strava response after authorization
  * @return {Promise<Record<string, string>>} success or error message
  */
-export async function getStravaActivities(access_token: string, athlete_id: string) {
+export async function getStravaActivities(access_token: string, athlete_id: string): Promise<Record<string, string>> {
 let processError: Record<string, string> = {};
 try {
     const payload = await strava.athlete.listActivities({access_token: access_token, id: athlete_id});
