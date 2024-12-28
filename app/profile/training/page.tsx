@@ -1,14 +1,47 @@
-/** Weekly breakout of workouts
- * | week 1 >|
- * | week 2 >|
- * | ...... >|
- * 
- */
+'use client'
+
+import WeeklyTrainingTable from "app/components/training-weeks";
+import WorkOutDisplay from "app/components/workout-display";
+import { DatabaseActivity } from "app/lib/definitions";
+import { getActivitesFromDB } from "app/lib/strava-activities";
+import { useSession } from "next-auth/react";
+import { useEffect, useState } from "react";
+
+/** Page for workout display and training per week. Two different tabs */
+
 export default function page() {
+
+    const {data:session, status} = useSession();
+    const [currentTab, setCurrentTab] = useState("Workouts"); // use to change between workout list and weekly tab
+    const [activityList, setActivityList]= useState<DatabaseActivity[]>([]); // Activity list pulled from database
+
+    /** Runs the effect once and then when email changes */
+    useEffect(() => {
+        let ignore = false;
+        console.log(status);
+        getActivitesFromDB(session?.user?.email!).then(result => {
+            if (!ignore) {
+                console.log(result);
+                setActivityList(result);
+            }
+        });
+
+        return () => {ignore = true;}; //figure out if I need to return anything here
+    }, [status]); // figure out a way to make only one fetch of data
+
     return (
-        <div>
-            <li>Week 1</li>
-            <li>Week 2</li>
-        </div>
+        <>
+            <div id="selection-tab">
+                <button onClick={() => setCurrentTab("Workouts")}>Workouts</button>
+                <button onClick={() => setCurrentTab("Training")}>Weekly Training</button>
+            </div>
+
+            {currentTab === "Workouts" && <WorkOutDisplay activityList={activityList}></WorkOutDisplay>}
+            {currentTab === "Training" && <WeeklyTrainingTable activityList={activityList}></WeeklyTrainingTable>}
+
+        
+        
+        </>
+        
     )
 }
