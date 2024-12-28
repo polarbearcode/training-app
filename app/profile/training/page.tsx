@@ -31,9 +31,13 @@ export default function page() {
 
     return (
         <>
-            <div id="selection-tab">
-                <button onClick={() => setCurrentTab("Workouts")}>Workouts</button>
-                <button onClick={() => setCurrentTab("Training")}>Weekly Training</button>
+            <div id="selection-tab" className="grid grid-cols-2 mb-10">
+                <button onClick={() => setCurrentTab("Workouts")} className={`${currentTab === "Workouts" ? 'bg-orange-300' : ''}`}>
+                    Workouts
+                </button>
+                <button onClick={() => setCurrentTab("Training")} className={`${currentTab === "Training" ? 'bg-orange-300' : ''}`}>
+                    Weekly Training
+                </button>
             </div>
 
             {currentTab === "Workouts" && <WorkOutDisplay activityList={activityList}></WorkOutDisplay>}
