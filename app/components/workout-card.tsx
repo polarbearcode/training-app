@@ -2,6 +2,7 @@
 
 /** Display for individual workouts (display in boxes) 
  * Similar to https://v1.tailwindcss.com/components/cards
+ * Used in workout-display component
 */
 
 import { numberDateToString } from "app/lib/utils"
@@ -15,7 +16,9 @@ export default function WorkoutCardWrapper({
     averageSpeed,
     year, 
     month, 
-    day}: 
+    day,
+    type
+}  : 
     
     {
         distance: number,
@@ -23,22 +26,28 @@ export default function WorkoutCardWrapper({
         averageSpeed: number
         year: number,
         month: number,
-        day: number
+        day: number,
+        type: string
     }) {
 
     const [runType, setRunType] = useState('');
-    const runAnalysisType = analyzeRunType(elevation, distance);
+    const runTags = analyzeRunType(elevation, distance, averageSpeed);
 
 
     return (
         <>
-            <div className={`max-w-sm rounded overflow-hidden shadow-lg border-4 p-3" ${runAnalysisType === "Hill" ? 'border-orange-300' : '' } ${runAnalysisType === "Long"? 'border-green-300': ''}`}>
+            <div className={`max-w-sm rounded overflow-hidden shadow-lg border-4 p-20`}>
                 <p>Distance: {distance}</p>
                 <p>Elevation: {elevation}</p>
                 <p>Average Speed: {averageSpeed}</p>
                 <p>Date: {numberDateToString(year, month, day)}</p>
                 <div>
                     <CategoryDropdown optionsList={["Long Run", "Tempo", "Speed"]} setterFunction = {setRunType}></CategoryDropdown>
+                </div>
+                <div id="tags" className="relative top-10">
+                    {type === "Run" && runTags.map((tag, key) => {
+                        return <p key={key} className="text-xs">{tag}</p>
+                    })}
                 </div>
             </div>
         </>
