@@ -27,7 +27,7 @@ export async function getStravaUserCodeRedirect() {
 export async function getStravaActivities(access_token: string, athlete_id: string): Promise<Record<string, string>> {
 let processError: Record<string, string> = {};
 try {
-    const payload = await strava.athlete.listActivities({access_token: access_token, id: athlete_id});
+    const payload = await strava.athlete.listActivities({access_token: access_token, id: athlete_id ,per_page:100});
     processError = await saveActivities(payload);
     return {message: "Retrieved list of activities and saved it to database"};
 } catch (error) {
