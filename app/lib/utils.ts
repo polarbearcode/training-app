@@ -56,3 +56,18 @@ export function numberDateToString(year: number, month: number, day: number): st
     return monthString + " " + day.toString() + ", " + year.toString();
 
 }
+
+/**
+ * Converts a number of minutes and seconds into a float rounded to 2 decimal places. 
+ * 8 minutes and 30 seconds would be 8.5.
+ * @param minutes {number} number of minutes. Must be >= 0.
+ * @param seconds {number} must be  >= 0 and less than 60
+ * @returns {number} a float value. Error if invalid arguments. 
+ */
+export function minutesSecondsToFloat(minutes : number, seconds: number) : number {
+    if (seconds < 0 || seconds >= 60 || minutes < 0) {
+        throw new Error("invalid arguments");
+    }
+
+    return Math.round((minutes + seconds / 60) * 100) / 100;
+}
