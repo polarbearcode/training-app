@@ -15,7 +15,7 @@ const customJestConfig = {
 
   transform: {
     '^.+\\.(ts|tsx)?$': 'ts-jest',
-    '^.+\\.(js|jsx)$': 'babel-jest',
+    '^.+\\.(js|jsx)$': ['babel-jest',  { "configFile": "./babel.config.test.js" }],
   },
 
   // DON'T SET THIS HERE - it's overridden below
