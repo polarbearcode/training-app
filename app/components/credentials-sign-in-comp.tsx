@@ -5,7 +5,7 @@
 'use client';
 
 import { useActionState } from 'react';
-import { authenticate } from '../lib/actions'
+import { authenticate } from '../lib/actions/actions'
 
 import {
     AtSymbolIcon,
