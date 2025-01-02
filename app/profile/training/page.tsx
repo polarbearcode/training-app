@@ -3,7 +3,7 @@
 import WeeklyTrainingTable from "app/components/training-weeks";
 import WorkOutDisplay from "app/components/workout-display";
 import { DatabaseActivity } from "app/lib/definitions";
-import { getActivitesFromDB } from "app/lib/strava-activities";
+import { getActivitesFromDB } from "app/lib/actions/strava-activities";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 

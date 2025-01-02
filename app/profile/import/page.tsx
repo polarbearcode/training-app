@@ -1,5 +1,5 @@
 /** Import Strava workouts page */
-import { getStravaUserCodeRedirect } from "app/lib/strava-activities";
+import { getStravaUserCodeRedirect } from "app/lib/actions/strava-activities";
 
 
 
