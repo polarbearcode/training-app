@@ -8,7 +8,9 @@ import { redirect } from 'next/navigation';
 import {default as strava} from 'strava-v3';
 import { processDate } from '../utils';
 import { auth } from '../../../auth';
-import { DatabaseActivity, StravaActivity } from '../definitions';
+import { DatabaseActivity, StravaActivity, UserProfileDataBase} from '../definitions';
+
+const client = await db.connect();
 
 
 
@@ -104,9 +106,40 @@ export async function registerUser(
     } else { // if there are validation errors
         return {
             errors: validatedFields.error.flatten().fieldErrors,
-            message: 'Missig fields'
+            message: 'Missing fields'
         }
     }
+}
+
+
+/**
+ * Get user profile from the database based on email identifier. 
+ * @param email {string} user's email
+ * @returns {Promise<UserProfile>} represents user profile 
+ */
+export async function getUserProfile(email: string) : Promise<UserProfileDataBase> {
+
+  const defaultReturn = {email: email, pace_minutes: 0, pace_seconds: 0, 
+    training_start_date: new Date(), strava_data_pull_date: new Date()};
+   
+  
+  try {
+    const profile = await client.sql<UserProfileDataBase>`
+      SELECT * FROM userprofile
+      WHERE email=${email};
+    `;
+
+    // if email is in database
+    if (profile.rows.length > 0) {
+      return profile.rows[0];
+    } else {
+      return defaultReturn;
+    }
+    
+  } catch (error) {
+    console.log(error);
+    return defaultReturn;
+  }
 }
 
 
