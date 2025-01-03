@@ -1,9 +1,11 @@
 'use client'
 
 
+import { getUserProfile } from "app/lib/actions/actions";
 import { updateUserProfile, UpdateFormState} from "app/lib/actions/updateFormActions"
+import { UserProfileDataBase } from "app/lib/definitions";
 import { useSession } from "next-auth/react";
-import { useActionState } from "react";
+import { useActionState, useEffect } from "react";
 
 
 /** Form to add or update user profile data
@@ -11,9 +13,41 @@ import { useActionState } from "react";
  */
 
 export default function UpdateUserForm() {
+
+
     const initialState: UpdateFormState = {message: "", errors: {}, values:{minutes: 0, seconds: 0, startDate: new Date().toString()}};
     const [state, formAction] = useActionState(updateUserProfile, initialState);
     const {data: session} = useSession();
+
+    /** Runs the effect once and then when email changes */
+        useEffect(() => {
+            let ignore = false;
+            if (session) {
+                getUserProfile(session.user?.email!).then(result => {
+                    if (!ignore) {
+                        initialState.values = {};
+                        initialState.values.minutes = result.pace_minutes;
+                        initialState.values.seconds = result.pace_seconds;
+                        initialState.values.startDate = result.training_start_date.toString();
+                        
+                    }
+                }).catch(error => {
+                    console.log(error);
+                });
+            }
+            
+    
+            return () => {ignore = true;}; //figure out if I need to return anything here
+        }, [session?.user?.email]); 
+
+         // wait for session to be not null so I can get email from session
+    if (session === null) {
+        return <p>Loading</p> // suspense
+    }
+
+
+    
+
 
     
 
