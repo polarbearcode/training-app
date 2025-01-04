@@ -35,9 +35,6 @@ export type UpdateFormState = {
         startDate?: string;
     }
 
-    
-
-  
 
 };
 
@@ -98,17 +95,16 @@ export async function updateUserProfile(prevState: UpdateFormState, formData: Fo
 
     }
 
-    const { email, minutes, seconds } = validatedFields.data;
+    const { email, minutes, seconds, startDate } = validatedFields.data;
 
-    const goalPace = minutesSecondsToFloat(minutes, seconds);
 
     try {
         const client = await db.connect();
         await client.sql`
-            INSERT INTO userProfile (goalPace)
-            VALUES (${goalPace})
+            INSERT INTO UserProfile (email, pace_minutes, pace_seconds, training_start_date)
+            VALUES (${email}, ${minutes}, ${seconds}, ${startDate.toDateString()})
             ON CONFLICT (email) DO UPDATE
-            SET goalPace = EXCLUDED.goalPace;
+            SET pace_minutes=${minutes}, pace_seconds=${seconds}, training_start_date=${startDate.toDateString()};
         `;
         
         return {
@@ -117,6 +113,7 @@ export async function updateUserProfile(prevState: UpdateFormState, formData: Fo
 
           
     } catch (error) {
+        console.log(error);
         return {
             message: "Database error. Could not update user information."
         } 
