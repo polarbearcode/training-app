@@ -1,4 +1,4 @@
-import { getActivitesFromDB, getStravaActivities } from "app/lib/strava-activities";
+import { getActivitesFromDB, getStravaActivities } from "app/lib/actions/strava-activities";
 
 test("GetActivities pulls activities by email", async() =>  {
     const activityList = await getActivitesFromDB("user1@example.com");
