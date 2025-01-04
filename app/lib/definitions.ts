@@ -40,6 +40,16 @@ export type DatabaseActivity = {
 
 }
 
+/** What gets pulled from the database */
+export type UserProfileDataBase = {
+  email: string;
+  pace_minutes: number;
+  pace_seconds: number;
+  training_start_date: Date;
+  strava_data_pull_date: Date;
+}
+
+
 /** 
 resource_state: 2,
   athlete: [Object: null prototype] { id: 121786274, resource_state: 1 },
