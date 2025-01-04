@@ -46,3 +46,5 @@ pnpm-lock.yaml
 
 vitest.config.mts
 app/lib/seed
+
+babel.config.js
