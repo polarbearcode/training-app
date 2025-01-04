@@ -4,7 +4,7 @@
  */
 import axios from 'axios';
 import { NextRequest, NextResponse } from 'next/server';
-import { getStravaActivities } from 'app/lib/strava-activities';
+import { getStravaActivities } from 'app/lib/actions/strava-activities';
 
 
 export async function GET(req: NextRequest) {  
@@ -50,9 +50,9 @@ export async function GET(req: NextRequest) {
       // Get and upload activities to database
       const processActivities =  await getStravaActivities(access_token, athlete_id);
 
-      if (processActivities.error) {
+/**      if (processActivities.error) {
         return NextResponse.json({ error: 'Unable to get activities or unable to put them to database' }, { status: 500 });
-      }
+      } */
 
 
       
