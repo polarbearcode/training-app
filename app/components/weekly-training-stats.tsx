@@ -1,15 +1,20 @@
+'use client';
 /** A week of training stats.
  * Used in training-weeks for the table
  */
 
 import { DatabaseActivity } from "app/lib/definitions"
+import { useState } from "react";
 
-export default function WeekTrainingStats({activityList, beginDate, endDate, weekNum} : {
+export default function WeekTrainingStats({activityList, beginDate, endDate} : {
     activityList: DatabaseActivity[];
     beginDate: Date;
     endDate: Date;
-    weekNum: number
 }) {
+
+    // for toggling showing stats
+
+    const [hide, setHide] = useState(true);
 
     // get the activities that fall in the date range
     const activitiesWithinDate: DatabaseActivity[] = [];
@@ -25,14 +30,35 @@ export default function WeekTrainingStats({activityList, beginDate, endDate, wee
     };
 
     // process stats
+    let totalRuns = 0;
     let totalDistance = 0;
 
     for (let i = 0; i < activitiesWithinDate.length; i++) {
-        totalDistance += activitiesWithinDate[i].distance;
+
+        const curActivity: DatabaseActivity = activitiesWithinDate[i]; 
+        totalDistance += curActivity.distance;
+
+        if (curActivity.activitytype === "Run") {
+            totalRuns++;
+        }
+    }
+
+    function toggleHide() {
+        setHide(!hide);
     }
 
 
 
 
-    return <p>Week {weekNum}: {totalDistance}</p>
+    return (
+        <>
+            <button onClick={toggleHide}>Hide</button>
+            {!hide && 
+                <ul>
+                    <li>{totalDistance}</li>
+                    <li>{totalRuns}</li>
+                </ul>
+            }
+        </>
+    )
 }

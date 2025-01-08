@@ -2,7 +2,9 @@ import { DatabaseActivity } from "app/lib/definitions";
 import { createWeekDateIntervals } from "app/lib/utils";
 import WeekTrainingStats from "./weekly-training-stats";
 
-/** Table of weekly training */
+/** Table of weekly training 
+ * Used in the training/page.tsx page
+*/
 export default function WeeklyTrainingTable({activityList, userTrainingStartDate} : {
     activityList: DatabaseActivity[];
     userTrainingStartDate: Date;
@@ -13,15 +15,15 @@ export default function WeeklyTrainingTable({activityList, userTrainingStartDate
     return (
         <>
             {weeklyIntervals.map((interval, i) => {
-                return <WeekTrainingStats 
-                    activityList={activityList} 
-                    beginDate={interval[0]} 
-                    endDate={interval[1]} 
-                    key={i}
-                    weekNum={i + 1}
-                    >
-                    
-                </WeekTrainingStats>
+                return <div key={i}>
+                        <h1>Week {i + 1}</h1>
+                        <WeekTrainingStats 
+                            activityList={activityList} 
+                            beginDate={interval[0]} 
+                            endDate={interval[1]} 
+                            >
+                        </WeekTrainingStats>
+                    </div>
             })}
         </>
         
