@@ -6,6 +6,7 @@ import { DatabaseActivity } from "app/lib/definitions";
 import { getActivitesFromDB } from "app/lib/actions/strava-activities";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
+import { getUserProfile } from "app/lib/actions/actions";
 
 /** Page for workout display and training per week. Two different tabs */
 
@@ -14,16 +15,25 @@ export default function page() {
     const {data:session, status} = useSession();
     const [currentTab, setCurrentTab] = useState("Workouts"); // use to change between workout list and weekly tab
     const [activityList, setActivityList]= useState<DatabaseActivity[]>([]); // Activity list pulled from database
+    const [userTrainingStartDate, setUserTrainingStartDate] = useState(new Date());
 
     /** Runs the effect once and then when email changes */
     useEffect(() => {
         let ignore = false;
-        console.log(status);
         getActivitesFromDB(session?.user?.email!).then(result => {
             if (!ignore) {
-                console.log(result);
+                result.sort(function(a, b) {
+                    return parseInt(b.activityid) - parseInt(a.activityid);
+                });
+
                 setActivityList(result);
             }
+
+            getUserProfile(session?.user?.email!).then(result => {
+                if (!ignore) {
+                    setUserTrainingStartDate(result.training_start_date);
+                }
+            })
         });
 
         return () => {ignore = true;}; //figure out if I need to return anything here
@@ -41,7 +51,7 @@ export default function page() {
             </div>
 
             {currentTab === "Workouts" && <WorkOutDisplay activityList={activityList}></WorkOutDisplay>}
-            {currentTab === "Training" && <WeeklyTrainingTable activityList={activityList}></WeeklyTrainingTable>}
+            {currentTab === "Training" && <WeeklyTrainingTable activityList={activityList} userTrainingStartDate={userTrainingStartDate}></WeeklyTrainingTable>}
 
         
         
