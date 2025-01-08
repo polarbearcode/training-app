@@ -4,12 +4,19 @@
  */
 import axios from 'axios';
 import { NextRequest, NextResponse } from 'next/server';
-import { getStravaActivities } from 'app/lib/actions/strava-activities';
+import { getStravaActivities, updateUserDataPullDateStrava } from 'app/lib/actions/strava-activities';
+import { auth } from "../../../../auth"
+import { getUserProfile } from 'app/lib/actions/actions';
+import { UserProfileDataBase } from 'app/lib/definitions';
 
 
 export async function GET(req: NextRequest) {  
  
-  //const session = await auth();
+  const session = await auth();
+
+  const user: UserProfileDataBase = await getUserProfile(session?.user?.email!);
+
+  const dataPullDate: number|undefined = user.strava_data_pull_date;
 
   // Figure out next auth, could implement check if token is not expired to save a request
 
@@ -48,7 +55,9 @@ export async function GET(req: NextRequest) {
       const athlete_id = response.data.athlete.id;
     
       // Get and upload activities to database
-      const processActivities =  await getStravaActivities(access_token, athlete_id);
+      const processActivities =  await getStravaActivities(access_token, athlete_id, dataPullDate);
+
+      const updateDataPullDate = await updateUserDataPullDateStrava(processActivities.updateDataPullDate, session?.user?.email!);
 
 /**      if (processActivities.error) {
         return NextResponse.json({ error: 'Unable to get activities or unable to put them to database' }, { status: 500 });
