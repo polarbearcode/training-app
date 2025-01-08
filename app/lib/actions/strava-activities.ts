@@ -10,6 +10,8 @@ import { db, VercelPoolClient } from "@vercel/postgres";
 import { auth } from "auth";
 import { processDate } from "../utils";
 
+const client = await db.connect();
+
 /** Redirects user to Strava's authorize page (not the exchange token request) */
 export async function getStravaUserCodeRedirect() {
 
@@ -21,35 +23,52 @@ export async function getStravaUserCodeRedirect() {
 /**
  * Get all Strava activities from the user and save it to a database.
  * Tracks date of the latest pulled activity if all activities successfully
- * uploaded to the database otherwise returns most recent un-uploaded activity. 
+ * uploaded to the database otherwise returns most recent un-uploaded activity to be used for next data pull.
  * @param access_token {string} access token received after authorization from exchaning user code
  * @param athlete_id  {string} athelte id from Strava response after authorization
- * @return {Promise<{updateDataPullDate: Date, message: string}>} success or error message
+ * @param dataPullDate {number|undefined} the date to pull Strava activities from in milliseconds
+ * @return {Promise<{updateDataPullDate: number, message: string}>} date to put in after field for next data pull 
+ * and success or error message
  */
-export async function getStravaActivities(access_token: string, athlete_id: string): Promise<{updateDataPullDate: Date, message: string}> {
-let process: {updateDataPullDate: Date, message: string} = {updateDataPullDate: new Date(), message: ""};
-try {
-    const payload = await strava.athlete.listActivities({access_token: access_token, id: athlete_id ,per_page:100});
-    process = await saveActivities(payload);
-    return {updateDataPullDate: process.updateDataPullDate, message: "Retrieved list of activities and saved it to database"};
-} catch (error) {
-    console.log(error);
-    return {updateDataPullDate: process.updateDataPullDate, message: `Uploaded activities up to ${process.updateDataPullDate.toString()}`};
-}
+export async function getStravaActivities(access_token: string, athlete_id: string, 
+    dataPullDate: number): Promise<{updateDataPullDate: number, message: string}> {
+
+    let process: {updateDataPullDate: number, message: string} = {updateDataPullDate: new Date().getTime(), message: ""};
+
+    let pullDataFrom: number = new Date("2024-10-01").getTime() / 1000; // getTime returns in milliseconds. Strava needs seconds.
+
+    // if a data pull date is provided when function is called
+    if (dataPullDate) {
+        pullDataFrom = dataPullDate / 1000;
+    }
+
+    console.log(pullDataFrom);
+
+    try {
+        const payload = await strava.athlete.listActivities({access_token: access_token, id: athlete_id, 
+            per_page:100, after: Math.round(pullDataFrom)});
+        
+        process = await saveActivities(payload);
+        return {updateDataPullDate: process.updateDataPullDate, message: "Retrieved list of activities and saved it to database"};
+    } catch (error) {
+        console.log(error);
+        return {updateDataPullDate: process.updateDataPullDate, message: `Uploaded activities up to ${process.updateDataPullDate.toString()}`};
+    }
 
 }
 
 /**
- * Save the activities from a list of activities to the database
+ * Save the activities from a list of activities to the database and 
+ * track date of most recent activity if no errors uploading to the database
+ * or the earliest activity that could not be uploaded. 
  * @param payload    {Array}    list of Strava activities returned by listActivities
- * @return {Promise<Record<string, string>>} success or error message containing activities not uploaded
+ * @return {udpateDataPullDate: number, message: string} success or error message containing activities not uploaded
  */
-async function saveActivities(payload: Array<StravaActivity>): Promise<{updateDataPullDate: Date, message: string}> {
-    const client = await db.connect();
-
+async function saveActivities(payload: Array<StravaActivity>): Promise<{updateDataPullDate: number, message: string}> {
+   
     const unableToUpload : string[] = []; // make this a stack?
 
-    let updateDataPullDate: Date= new Date();
+    let updateDataPullDate: Date= new Date(); // used for comparison
 
     for (let i = 0; i < payload.length; i++) {
         const curActivity = payload[i];
@@ -64,6 +83,7 @@ async function saveActivities(payload: Array<StravaActivity>): Promise<{updateDa
 
             const curActivityDate = new Date(curActivity.start_date);
 
+            // update if activity is earlier
             if (curActivityDate < updateDataPullDate) {
                 updateDataPullDate = curActivityDate;
             }
@@ -73,12 +93,11 @@ async function saveActivities(payload: Array<StravaActivity>): Promise<{updateDa
         
     }
 
-
-
+    // no error just use today's date. 
     if (unableToUpload.length == 0) {
-        return {updateDataPullDate: updateDataPullDate, message: "All acitivites uploaded"};
+        return {updateDataPullDate: updateDataPullDate.getTime(), message: "All acitivites uploaded"};
     } else {
-        return {updateDataPullDate: updateDataPullDate, message: "Unable to upload activities" + unableToUpload};
+        return {updateDataPullDate: updateDataPullDate.getTime(), message: "Unable to upload activities" + unableToUpload};
     }
 }
 
@@ -126,7 +145,7 @@ async function uploadActivityToDB(activity: StravaActivity, client: VercelPoolCl
  */
 export async function getActivitesFromDB(email: string): Promise<DatabaseActivity[]> {
     try {
-        const client = await db.connect();
+      
         const activities = await client.sql<DatabaseActivity>`
         SELECT * FROM activity 
         WHERE email=${email};
@@ -145,20 +164,21 @@ export async function getActivitesFromDB(email: string): Promise<DatabaseActivit
 
 /**
  * Update the date of the most recent Strava activity pulled for a user 
- * @param updateDataPullDate {Date} the date of the most activity saved to the database or today's not if 
- * no data for the user. 
+ * @param updateDataPullDate {number} the date of the most recent activity saved to the database or today's if 
+ * no data for the user. Units in milliseconds. 
  * @param email {string} the email of the user to uniquely identify them. 
  * @returns {error?:string} an error string if there is an error, otherwise an empty dictionary. 
  */
-export async function updateUserDataPullDateStrava(updateDataPullDate: Date, email: string) : Promise<{error?: string}> {
+export async function updateUserDataPullDateStrava(updateDataPullDate: number, email: string) : Promise<{error?: string}> {
     // connect to vercel database
-    const client = db.connect();
+
+   
     try {
-        (await client).sql`
-            INSERT INTO userProfile (email, dataPullDate)
-            VALUES email=${email} dataPullDate=${updateDataPullDate.toString()}
+         client.sql`
+            INSERT INTO userProfile (email, strava_data_date)
+            VALUES (${email}, ${updateDataPullDate.toString()})
             ON CONFLICT (email) DO UPDATE 
-            SET dataPullDate=${updateDataPullDate.toString()};
+            SET strava_data_date=${updateDataPullDate.toString()};
         `;
 
         return {};
@@ -166,6 +186,37 @@ export async function updateUserDataPullDateStrava(updateDataPullDate: Date, ema
     } catch(error) {
         console.log(error);
         return {error: `Could not update data pull date for user ${email}`}; 
+    }
+}
+
+/**
+ * Update the data pulled date for the user in the database. 
+ * @param email {string} the user's email in the database
+ * @param dataPullDate {number} date in epoch time
+ * @returns {Promise<error?: string>} An error message if there is an error or an empty {}.
+ */
+async function updateUserStravaDataPullDate(email: string, dataPullDate: number) : Promise<{error?:string}>  {
+    try {
+
+        const checkIfEmailExists = await client.sql`
+            SELECT email FROM UserProfile
+            WHERE email=${email};
+        `;
+
+        if (checkIfEmailExists.rows) {
+            client.sql`
+                UPDATE UserProfile 
+                SET strava_data_date=${dataPullDate}
+                WHERE email=${email};
+            `;
+
+        } else {
+            return {error: `User with email: ${email} not in database`};
+        }
+
+        return {};
+    } catch (error) {
+        return {error: `Could not update user's data pull date for email: ${email}`}
     }
 }
   
