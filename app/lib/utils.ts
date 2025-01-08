@@ -71,3 +71,18 @@ export function minutesSecondsToFloat(minutes : number, seconds: number) : numbe
 
     return Math.round((minutes + seconds / 60) * 100) / 100;
 }
+
+/**
+ * Create a list of NUMINTERVALS weekly intervals starting with the provided beginning date. 
+ * @param beginDate {Date} the start date
+ * @param numIntervals {number} the number of intervals to create
+ * @returns {Array[<Date, Date>]} a length 16 array of date intervals each pair is beginning and end of that interval.
+ */
+export function createWeekDateIntervals(beginDate: Date, numIntervals: number) : Array<[Date, Date]> {
+    const intervals: Array<[Date, Date]> = [];
+    for (let i = 0; i < numIntervals; i++ ) {
+        intervals.push([beginDate, new Date(beginDate.getTime() + (86400000 * 6))]);
+        beginDate = new Date(beginDate.getTime() + (86400000 * 7));
+    }
+    return intervals;
+}
