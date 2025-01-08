@@ -14,6 +14,7 @@ export default function WorkOutDisplay({activityList} : {activityList: DatabaseA
     const [viewCategory, setViewCategory] = useState("All"); // default filter to all
 
 
+
     return (
         <>
             <div id="filter" className="mb-6">
