@@ -46,7 +46,7 @@ export type UserProfileDataBase = {
   pace_minutes: number;
   pace_seconds: number;
   training_start_date: Date;
-  strava_data_pull_date: Date;
+  strava_data_pull_date: number;
 }
 
 
