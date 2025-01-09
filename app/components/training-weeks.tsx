@@ -16,11 +16,11 @@ export default function WeeklyTrainingTable({activityList, userTrainingStartDate
         <>
             {weeklyIntervals.map((interval, i) => {
                 return <div key={i}>
-                        <h1>Week {i + 1}</h1>
                         <WeekTrainingStats 
                             activityList={activityList} 
                             beginDate={interval[0]} 
                             endDate={interval[1]} 
+                            weekNum={i + 1}
                             >
                         </WeekTrainingStats>
                     </div>
