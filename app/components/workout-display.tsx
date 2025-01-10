@@ -31,7 +31,7 @@ export default function WorkOutDisplay({activityList} : {activityList: DatabaseA
                             year = {activity.year}
                             month = {activity.month}
                             day = {activity.day}
-                            type = {activity.activitytype}
+                           activityType = {activity.activitytype}
                             key = {i}
                         />
                     }
