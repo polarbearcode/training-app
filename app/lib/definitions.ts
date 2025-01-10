@@ -49,6 +49,23 @@ export type UserProfileDataBase = {
   strava_data_pull_date: number;
 }
 
+export type UserTrainingWeek = {
+  email: string;
+  marathon: string;
+  week: number;
+  total_runs: number | undefined;
+  total_miles: number | undefined;
+  total_long_miles: number | undefined;
+  total_easy_miles: number | undefined;
+  total_aerobic_miles: number | undefined;
+  total_5k_miles: number | undefined;
+  total_10k_miles: number | undefined;
+  total_hm_miles: number | undefined;
+  total_mp_miles: number | undefined;
+  number_hill_runs: number | undefined;
+  number_cross_training: number | undefined;
+}
+
 
 /** 
 resource_state: 2,
