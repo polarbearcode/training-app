@@ -5,9 +5,7 @@
  * Used in workout-display component
 */
 
-import { numberDateToString } from "app/lib/utils"
-import CategoryDropdown from "./category-dropdown"
-import { useState } from "react"
+import { convertFloatToMinutesSeconds, numberDateToString } from "app/lib/utils"
 import { analyzeRunType } from "app/lib/ai/run-analysis"
 
 export default function WorkoutCardWrapper({
@@ -17,7 +15,7 @@ export default function WorkoutCardWrapper({
     year, 
     month, 
     day,
-    type
+    activityType
 }  : 
     
     {
@@ -27,25 +25,22 @@ export default function WorkoutCardWrapper({
         year: number,
         month: number,
         day: number,
-        type: string
+        activityType: string
     }) {
 
-    const [runType, setRunType] = useState('');
+    
     const runTags = analyzeRunType(elevation, distance, averageSpeed);
 
 
     return (
         <>
             <div className={`max-w-sm rounded overflow-hidden shadow-lg border-4 p-20`}>
-                <p>Distance: {distance}</p>
-                <p>Elevation: {elevation}</p>
-                <p>Average Speed: {averageSpeed}</p>
+                <p>Distance: {Math.round(distance * 0.000621371 * 100) / 100} miles</p>
+                <p>Elevation: {elevation} meters</p>
+                {activityType === "Run" && <p>Average Speed: {convertFloatToMinutesSeconds(26.8224 / averageSpeed)}</p>}
                 <p>Date: {numberDateToString(year, month, day)}</p>
-                <div>
-                    <CategoryDropdown optionsList={["Long Run", "Tempo", "Speed"]} setterFunction = {setRunType}></CategoryDropdown>
-                </div>
                 <div id="tags" className="relative top-10">
-                    {type === "Run" && runTags.map((tag, key) => {
+                    {activityType === "Run" && runTags.map((tag, key) => {
                         return <p key={key} className="text-xs">{tag}</p>
                     })}
                 </div>
