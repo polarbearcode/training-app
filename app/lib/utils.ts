@@ -73,6 +73,25 @@ export function minutesSecondsToFloat(minutes : number, seconds: number) : numbe
 }
 
 /**
+ * Convert a float of minutes.seconds representing time like 5.36 minutes to human readable 
+ * time 5:22
+ * @param floatTime {number} the time to convert
+ * @returns {string} The time converted to x mintues : y seconds.
+ */
+export function convertFloatToMinutesSeconds(floatTime: number) : string {
+    const wholeMinutes = Math.floor(floatTime);
+    const fraction = floatTime - wholeMinutes;
+    const seconds = Math.round(60 * fraction);
+
+    let secondsString = seconds.toString();
+
+    if (seconds == 0) {
+        secondsString = "00";
+    }
+    return `${wholeMinutes}:${secondsString}`;
+}
+
+/**
  * Create a list of NUMINTERVALS weekly intervals starting with the provided beginning date. 
  * @param beginDate {Date} the start date
  * @param numIntervals {number} the number of intervals to create
