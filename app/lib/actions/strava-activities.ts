@@ -52,7 +52,7 @@ export async function getStravaActivities(access_token: string, athlete_id: stri
     } catch (error) {
         console.log(error);
         return {updateDataPullDate: process.updateDataPullDate, message: `Uploaded activities up to ${process.updateDataPullDate.toString()}`, 
-        error: "Error getting Strava activities or saving them to the database"};
+        error: "Error getting Strava activities"};
     }
 
 }
