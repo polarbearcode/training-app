@@ -27,11 +27,11 @@ export async function getStravaUserCodeRedirect() {
  * @param access_token {string} access token received after authorization from exchaning user code
  * @param athlete_id  {string} athelte id from Strava response after authorization
  * @param dataPullDate {number|undefined} the date to pull Strava activities from in milliseconds
- * @return {Promise<{updateDataPullDate: number, message: string}>} date to put in after field for next data pull 
+ * @return {Promise<{updateDataPullDate: number, message: string, error?:string}>} date to put in after field for next data pull 
  * and success or error message
  */
 export async function getStravaActivities(access_token: string, athlete_id: string, 
-    dataPullDate: number): Promise<{updateDataPullDate: number, message: string}> {
+    dataPullDate: number): Promise<{updateDataPullDate: number, message: string, error?:string}> {
 
     let process: {updateDataPullDate: number, message: string} = {updateDataPullDate: new Date().getTime(), message: ""};
 
@@ -42,7 +42,6 @@ export async function getStravaActivities(access_token: string, athlete_id: stri
         pullDataFrom = dataPullDate / 1000;
     }
 
-    console.log(pullDataFrom);
 
     try {
         const payload = await strava.athlete.listActivities({access_token: access_token, id: athlete_id, 
@@ -52,7 +51,8 @@ export async function getStravaActivities(access_token: string, athlete_id: stri
         return {updateDataPullDate: process.updateDataPullDate, message: "Retrieved list of activities and saved it to database"};
     } catch (error) {
         console.log(error);
-        return {updateDataPullDate: process.updateDataPullDate, message: `Uploaded activities up to ${process.updateDataPullDate.toString()}`};
+        return {updateDataPullDate: process.updateDataPullDate, message: `Uploaded activities up to ${process.updateDataPullDate.toString()}`, 
+        error: "Error getting Strava activities or saving them to the database"};
     }
 
 }
