@@ -29,7 +29,7 @@ export async function GET(req: NextRequest) {
 
     // No code in response from Strava (maybe user hit cancel). Add handling.
     if (!code) {
-      return NextResponse.json({ error: 'Authorization code required' }, { status: 400 });  
+      return NextResponse.redirect(process.env.BASE_URL!);
     }
 
     // Variables needed to make exchange POST request
