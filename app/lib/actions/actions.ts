@@ -8,7 +8,7 @@ import { redirect } from 'next/navigation';
 import {default as strava} from 'strava-v3';
 import { processDate } from '../utils';
 import { auth } from '../../../auth';
-import { DatabaseActivity, StravaActivity, UserProfileDataBase} from '../definitions';
+import { DatabaseActivity, StravaActivity, UserProfileDataBase, UserTrainingWeek} from '../definitions';
 
 const client = await db.connect();
 
@@ -120,7 +120,7 @@ export async function registerUser(
 export async function getUserProfile(email: string) : Promise<UserProfileDataBase> {
 
   const defaultReturn = {email: email, pace_minutes: 0, pace_seconds: 0, 
-    training_start_date: new Date(), strava_data_pull_date: new Date()};
+    training_start_date: new Date(), strava_data_pull_date: new Date().getTime()};
    
   
   try {
@@ -140,6 +140,52 @@ export async function getUserProfile(email: string) : Promise<UserProfileDataBas
     console.log(error);
     return defaultReturn;
   }
+}
+
+/**
+ * Get the user's training plan by week from the database
+ * @param email {string} the user's email to unqiuely identify them in the database
+ * @param marathon {string} the name of the marathon for the training plan
+ * @returns {Promise<Record<number, UserTrainingWeek>>} training plans broken out by week
+ */
+export async function getUserTrainingPlan(email: string, marathon: string) : Promise<Record<number, UserTrainingWeek>>  {
+  const data = await client.sql<UserTrainingWeek>`
+    SELECT * FROM usertraining
+    WHERE email=${email} AND marathon=${marathon};
+  `;
+
+  const res: Record<number, UserTrainingWeek> = {}; // don't have to create a new object sans the week property
+
+  for (let i = 0; i < data.rows.length; i++) {
+    const curRow: UserTrainingWeek = data.rows[i];
+
+    res[curRow.week] = curRow;
+  }
+
+  
+
+  return res;
+
+}
+
+/**
+ * Get a list of marathons the user has in the UserTraining table in the database
+ * @param email  {string} the user's email
+ * @returns  {Promise<string[]>} list of user marathons
+ */
+export async function getUserMarathons(email: string): Promise<string[]> {
+  const data = await client.sql`
+    SELECT DISTINCT marathon FROM usertraining
+    WHERE email=${email};
+  `;
+
+  const marathonList = [];
+
+  for (let i = 0; i < data.rows.length; i++) {
+    marathonList.push(data.rows[i].marathon);
+  };
+
+  return marathonList;
 }
 
 
