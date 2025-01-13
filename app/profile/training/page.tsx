@@ -5,7 +5,7 @@ import WorkOutDisplay from "app/components/workout-display";
 import { DatabaseActivity } from "app/lib/definitions";
 import { getActivitesFromDB } from "app/lib/actions/strava-activities";
 import { useSession } from "next-auth/react";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { getUserProfile } from "app/lib/actions/actions";
 
 /** Page for workout display and training per week. Two different tabs */
@@ -16,6 +16,7 @@ export default function page() {
     const [currentTab, setCurrentTab] = useState("Workouts"); // use to change between workout list and weekly tab
     const [activityList, setActivityList]= useState<DatabaseActivity[]>([]); // Activity list pulled from database
     const [userTrainingStartDate, setUserTrainingStartDate] = useState(new Date());
+    
 
     /** Runs the effect once and then when email changes */
     useEffect(() => {
@@ -49,9 +50,14 @@ export default function page() {
                     Weekly Training
                 </button>
             </div>
-
-            {currentTab === "Workouts" && <WorkOutDisplay activityList={activityList}></WorkOutDisplay>}
-            {currentTab === "Training" && <WeeklyTrainingTable activityList={activityList} userTrainingStartDate={userTrainingStartDate}></WeeklyTrainingTable>}
+            <Suspense fallback={<p>Loading</p>}>
+                {currentTab === "Workouts" && <WorkOutDisplay activityList={activityList}></WorkOutDisplay>}
+                {currentTab === "Training" && <WeeklyTrainingTable activityList={activityList} 
+                            userTrainingStartDate={userTrainingStartDate}
+                            email={session?.user?.email!}/>
+                }
+            </Suspense>
+            
 
         
         
