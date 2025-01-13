@@ -3,13 +3,12 @@
 
 import { getUserProfile } from "app/lib/actions/actions";
 import { updateUserProfile, UpdateFormState} from "app/lib/actions/updateFormActions"
-import { UserProfileDataBase } from "app/lib/definitions";
 import { useSession } from "next-auth/react";
 import { useActionState, useEffect, useState } from "react";
 
 
 /** Form to add or update user profile data
- * Marathon goal time
+ * used in profile/edit/page.tsx
  */
 
 export default function UpdateUserForm() {
@@ -18,7 +17,7 @@ export default function UpdateUserForm() {
     const [initialState, setInitialState] = useState<UpdateFormState>({message: "", errors: {}, values:{minutes: 0, seconds: 0, startDate: new Date().toString()}});
     const [state, formAction] = useActionState(updateUserProfile, initialState);
     const {data: session} = useSession();
-    const [dummy, setDummy] = useState<string[]>(["Button"]);
+    
 
     /** Runs the effect once and then when email changes */
         useEffect(() => {
@@ -26,7 +25,6 @@ export default function UpdateUserForm() {
             if (session) {
                 getUserProfile(session.user?.email!).then(result => {
                     if (!ignore) {
-                        console.log("here");
                         const newState = {...initialState}
                         newState.values = {};
                         newState.values.minutes = result.pace_minutes;
@@ -38,22 +36,12 @@ export default function UpdateUserForm() {
                 }).catch(error => {
                     console.log(error);
                 });
-            }
-            
+            } 
     
             return () => {ignore = true;}; //figure out if I need to return anything here
-        }, [session?.user?.email]); 
+        }, [session?.user]); 
 
-         // wait for session to be not null so I can get email from session
-    if (session === null) {
-        return <p>Loading</p> // suspense
-    }
-
-
-    function printState() {
-        console.log(initialState);
-    }
-    
+  
 
     return (
         <>
@@ -105,7 +93,7 @@ export default function UpdateUserForm() {
                 <input name="email" type="hidden" value={session?.user?.email || ''} readOnly/>     
 
 
-                <button type="submit" onClick={() => printState()} className="bg-yellow-50 p-2 rounded-md border-black border-2">Submit</button>
+                <button type="submit" className="bg-yellow-50 p-2 rounded-md border-black border-2">Submit</button>
                 
             </form>
 
