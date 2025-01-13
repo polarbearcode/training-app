@@ -3,19 +3,22 @@
  * Used in training-weeks for the table
  */
 
-import { DatabaseActivity } from "app/lib/definitions"
+import { DatabaseActivity, UserTrainingWeek } from "app/lib/definitions"
 import { useState } from "react";
 import { ArrowDownCircleIcon } from "@heroicons/react/16/solid";
 import { ArrowUpCircleIcon } from "@heroicons/react/24/outline";
 import { analyzeRunType } from "app/lib/ai/run-analysis";
+import { convertMetersToMiles } from "app/lib/utils";
 
-export default function WeekTrainingStats({activityList, beginDate, endDate, weekNum} : {
+export default function WeekTrainingStats({activityList, beginDate, endDate, weekNum, weeklyTraining} : {
     activityList: DatabaseActivity[];
     beginDate: Date;
     endDate: Date;
-    weekNum: number
+    weekNum: number;
+    weeklyTraining: Record<number, UserTrainingWeek>;
 }) {
 
+   
     // for toggling showing stats
 
     const [hide, setHide] = useState(true);
@@ -65,6 +68,41 @@ export default function WeekTrainingStats({activityList, beginDate, endDate, wee
         setHide(!hide);
     }
 
+    /**
+     * Get the planned amount for a specific aspect of training for a week.
+     * Example: week 1 total 5k miles planned: getPlannedAmount(1, "total_5k_miles")
+     * @param week {number} the week number 
+     * @param attr {string} which aspect of training to get the planned amount for
+     * @returns {number} the planned quantity
+     */
+    function getPlannedAmount(week: number, attr: string): number {
+
+    
+        // week has to be >= 0
+        if (week <= 0) {
+            throw Error("week number invalid");
+        }
+
+        let val: UserTrainingWeek = weeklyTraining[week]; // undefined if week is beyond training weeks like 17 for 16 week plan
+
+        console.log(val);
+
+        if (val) {
+            const returnVal = val[attr as keyof typeof val];
+
+            if (typeof returnVal === "number" && returnVal != null) {
+                return returnVal
+            }
+        }
+
+        return 0;
+    }
+
+    if (Object.keys(weeklyTraining).length === 0) {
+        return <p>Loading</p>
+    }
+
+
 
 
 
@@ -79,11 +117,18 @@ export default function WeekTrainingStats({activityList, beginDate, endDate, wee
     
         {!hide && 
                 <ul>
-                    <li className="text-center">Total Distance: {totalDistance}</li>
-                    <li className="text-center">Total Runs: {totalRuns}</li>
+                    <li className="text-center">
+                        Total Distance: {convertMetersToMiles(totalDistance)} miles
+                        Planned Distance: {getPlannedAmount(weekNum, "total_miles")} miles
+                    </li>
+                    <li className="text-center">
+                        Total Runs: {totalRuns}
+                        Planned Runs: {getPlannedAmount(weekNum, "total_runs")}
+                    </li>
                     <li className="text-center">Total Long Runs: {typeOfRunCount["Long Run"]}</li>
                     <li className="text-center">Total Hill Runs: {typeOfRunCount["Hills"]}</li>
-                    <li className="text-center">Total Easy Runs: {typeOfRunCount["Easy"]}</li>
+                    <li className="text-center">Total Easy Runs: {typeOfRunCount["Easy"]} 
+                        Plan: {weeklyTraining && weeklyTraining[weekNum - 1] && weeklyTraining[weekNum - 1].total_easy_miles}</li>
                 </ul>
             }
 
