@@ -115,21 +115,44 @@ export default function WeekTrainingStats({activityList, beginDate, endDate, wee
             </button>
         </div>
     
-        {!hide && 
-                <ul>
-                    <li className="text-center">
-                        Total Distance: {convertMetersToMiles(totalDistance)} miles
-                        Planned Distance: {getPlannedAmount(weekNum, "total_miles")} miles
-                    </li>
-                    <li className="text-center">
-                        Total Runs: {totalRuns}
-                        Planned Runs: {getPlannedAmount(weekNum, "total_runs")}
-                    </li>
-                    <li className="text-center">Total Long Runs: {typeOfRunCount["Long Run"]}</li>
-                    <li className="text-center">Total Hill Runs: {typeOfRunCount["Hills"]}</li>
-                    <li className="text-center">Total Easy Runs: {typeOfRunCount["Easy"]} 
-                        Plan: {weeklyTraining && weeklyTraining[weekNum - 1] && weeklyTraining[weekNum - 1].total_easy_miles}</li>
-                </ul>
+        {!hide &&
+                <table className="table-auto border border-slate-400 mx-auto">
+                    <thead>
+                        <tr>
+                            <th className="border border-slate-300 p-2">Stat</th>
+                            <th className="border border-slate-300 p-2">Weekly Total</th>
+                            <th className="border border-slate-300 p-2">Planned</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td className="border border-slate-300 p-2">Total Distance (miles)</td>
+                            <td className="border border-slate-300 p-2">{convertMetersToMiles(totalDistance)}</td>
+                            <td className="border border-slate-300 p-2">{getPlannedAmount(weekNum, "total_miles")}</td>
+                        </tr>
+
+                        <tr>
+                            <td className="border border-slate-300 p-2">Total Runs</td>
+                            <td className="border border-slate-300 p-2">{totalRuns}</td>
+                            <td className="border border-slate-300 p-2">{getPlannedAmount(weekNum, "total_runs")}</td>
+                        </tr>
+
+                        <tr>
+                            <td className="border border-slate-300 p-2">Total Easy Miles</td>
+                        </tr>
+
+                        <tr>
+                            <td className="border border-slate-300 p-2">Total Aerobic Miles</td>
+                        </tr>
+
+                        <tr>
+                            <td className="border border-slate-300 p-2">Total Marathon Pace Miles</td>
+                        </tr>
+
+                    </tbody>
+
+                </table>
+        
             }
 
             
