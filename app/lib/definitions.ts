@@ -1,5 +1,7 @@
 /** Define object properties for data pulled from database. */
 
+export const METERS_TO_MILES_DIVISOR = 1609;
+
 export type User = {
     id: string;
     name: string;

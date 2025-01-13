@@ -1,6 +1,7 @@
 /** Various utility functions */
 
 import { queryObjects } from "v8";
+import { METERS_TO_MILES_DIVISOR } from "./definitions";
 
 const MONTHS: Record<string, string> = {
     "1": "January",
@@ -104,4 +105,13 @@ export function createWeekDateIntervals(beginDate: Date, numIntervals: number) :
         beginDate = new Date(beginDate.getTime() + (86400000 * 7));
     }
     return intervals;
+}
+
+/**
+ * Convert a meters distance to miles to 2 decimal places
+ * @param meters {number} the distance in meters
+ * @returns {number} the distance in miles
+ */
+export function convertMetersToMiles(meters: number) : number {
+    return Math.round(meters / METERS_TO_MILES_DIVISOR * 100) / 100;
 }

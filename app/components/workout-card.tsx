@@ -5,8 +5,8 @@
  * Used in workout-display component
 */
 
-import { convertFloatToMinutesSeconds, numberDateToString } from "app/lib/utils"
-import { analyzeRunType } from "app/lib/ai/run-analysis"
+import { convertFloatToMinutesSeconds, convertMetersToMiles, numberDateToString } from "app/lib/utils";
+import { analyzeRunType } from "app/lib/ai/run-analysis";
 
 export default function WorkoutCardWrapper({
     distance, 
@@ -35,7 +35,7 @@ export default function WorkoutCardWrapper({
     return (
         <>
             <div className={`max-w-sm rounded overflow-hidden shadow-lg border-4 p-20`}>
-                <p>Distance: {Math.round(distance * 0.000621371 * 100) / 100} miles</p>
+                <p>Distance: {convertMetersToMiles(distance)} miles</p>
                 <p>Elevation: {elevation} meters</p>
                 {activityType === "Run" && <p>Average Speed: {convertFloatToMinutesSeconds(26.8224 / averageSpeed)}</p>}
                 <p>Date: {numberDateToString(year, month, day)}</p>
