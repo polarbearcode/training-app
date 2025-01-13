@@ -4,7 +4,7 @@
  */
 
 import { DatabaseActivity, UserTrainingWeek } from "app/lib/definitions"
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ArrowDownCircleIcon } from "@heroicons/react/16/solid";
 import { ArrowUpCircleIcon } from "@heroicons/react/24/outline";
 import { analyzeRunType } from "app/lib/ai/run-analysis";
@@ -23,47 +23,69 @@ export default function WeekTrainingStats({activityList, beginDate, endDate, wee
 
     const [hide, setHide] = useState(true);
 
-    // get the activities that fall in the date range
-    const activitiesWithinDate: DatabaseActivity[] = [];
+    const [activitiesWithinDate, setActivitiesWithinDate] = useState<DatabaseActivity[]>([]);
+    const [totalRuns, setTotalRuns]  = useState<number>(0);
+    const [totalDistance, setTotalDistance] = useState<number>(0);
+    const [totalXtrain, setTotalXTrain] = useState<number>(0);
+    const [totalHills, setTotalHills] = useState<number>(0);
 
-    for (let i = 0; i < activityList.length; i++) {
-        const curActivity: DatabaseActivity = activityList[i];
+    // Gets all the activities in the activityList that fall between beginDate and endDate
+    function filterActivitesByDate() {
 
-        const curActivityDate: Date = new Date(curActivity.year, curActivity.month - 1, curActivity.day);
-        
-        if (curActivityDate >= beginDate && curActivityDate <= endDate) {
-            activitiesWithinDate.push(curActivity);
-        }
-    };
+        const res: DatabaseActivity[] = []; // set activitiviesWithinDate to this after the loop
 
-    // process stats
-    let totalRuns = 0;
-    let totalDistance = 0;
-    let totalStrengthTraining  = 0;
-    let typeOfRunCount: Record<string, number> = {"Long Run": 0, "Hills": 0, "Easy": 0};
-
-    for (let i = 0; i < activitiesWithinDate.length; i++) {
-
-        const curActivity: DatabaseActivity = activitiesWithinDate[i]; 
-        totalDistance += curActivity.distance;
-
-        if (curActivity.activitytype === "Run") {
-            totalRuns++;
-
-            const runTags: string[] = analyzeRunType(curActivity.totalelevationgain, curActivity.distance, curActivity.averagespeed);
-
-            for (let j = 0; j < runTags.length; j++) {
-                typeOfRunCount[runTags[j]] = typeOfRunCount[runTags[j]] + 1;
+        for (let i = 0; i < activityList.length; i++) {
+            const curActivity: DatabaseActivity = activityList[i];
+    
+            const curActivityDate: Date = new Date(curActivity.year, curActivity.month - 1, curActivity.day);
+            
+            if (curActivityDate >= beginDate && curActivityDate <= endDate) {
+                activitiesWithinDate.push(curActivity);
             }
+        };
+
+        setActivitiesWithinDate(res);
+    }
+
+    // Create the summary stats for the activities that fall in the data range between beginDate and endDate
+    function processStats() {
+
+        let countTotalDistance = 0;
+        let countTotalRuns = 0;
+        let countHills = 0;
+        let countXTrain = 0;
+
+
+        for (let i = 0; i < activitiesWithinDate.length; i++) {
+
+            const curActivity: DatabaseActivity = activitiesWithinDate[i]; 
+    
+            if (curActivity.activitytype === "Run") {
+                countTotalRuns++;
+                countTotalDistance += curActivity.distance;
+    
+                const runTags: string[] = analyzeRunType(curActivity.totalelevationgain, curActivity.distance, curActivity.averagespeed);
+    
+                if (runTags.includes("Hills")) {
+                    countHills++;
+                }
+            }
+    
+            if (curActivity.activitytype === "Workout") {
+                countXTrain++;
+            }
+
         }
 
-        if (curActivity.activitytype === "Workout") {
-            totalStrengthTraining++;
-        }
-
+        setTotalDistance(countTotalDistance);
+        setTotalRuns(countTotalRuns);
+        setTotalXTrain(countXTrain);
+        setTotalHills(countHills);
 
     }
 
+
+    
     function toggleHide() {
         setHide(!hide);
     }
@@ -97,6 +119,12 @@ export default function WeekTrainingStats({activityList, beginDate, endDate, wee
 
         return 0;
     }
+
+    useEffect(() => {
+        filterActivitesByDate();
+        processStats();
+
+    }, [activityList, weeklyTraining])
 
     if (Object.keys(weeklyTraining).length === 0) {
         return <p>Loading</p>
@@ -147,6 +175,14 @@ export default function WeekTrainingStats({activityList, beginDate, endDate, wee
 
                         <tr>
                             <td className="border border-slate-300 p-2">Total Marathon Pace Miles</td>
+                        </tr>
+
+                        <tr>
+                            <td className="border border-slate-300 p-2">Total Hill Runs</td>
+                        </tr>
+
+                        <tr>
+                            <td className="border border-slate-300 p-2">Total X-training Sessions</td>
                         </tr>
 
                     </tbody>
