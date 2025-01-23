@@ -121,8 +121,14 @@ export default function WeekTrainingStats({activityList, beginDate, endDate, wee
     }
 
     useEffect(() => {
-        filterActivitesByDate();
-        processStats();
+        let ignore = false;
+        if (!ignore) {
+            filterActivitesByDate();
+            processStats();
+        };
+
+        return () => {ignore = false};
+
 
     }, [activityList, weeklyTraining])
 
