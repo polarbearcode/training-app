@@ -38,6 +38,14 @@ export type UpdateFormState = {
 
 };
 
+/**
+ * Update the details of the user's saved profile based on the update-user-info-form
+ * @param prevState {UpdateFormState}  The previous state of the form to display default/entered values
+ * and error messages.
+ * @param formData {FormData} the values the user entered from the form.
+ * @returns {Promise<{errors?, messages?, values?}>} a state of the form
+ }>}
+ */
 export async function updateUserProfile(prevState: UpdateFormState, formData: FormData) : Promise<{
     errors?: {
         email?: string[];
@@ -56,7 +64,7 @@ export async function updateUserProfile(prevState: UpdateFormState, formData: Fo
 }> 
 {
 
-    console.log(formData.get("training-start-date"));
+ 
     const validatedFields = UpdateFormSchema.safeParse({
         email: formData.get("email"),
         minutes: formData.get("goal-pace-minutes"),
@@ -69,7 +77,6 @@ export async function updateUserProfile(prevState: UpdateFormState, formData: Fo
 
     if (!validatedFields.success) {
 
-      console.log(prevState)
         const enteredValues : {minutes?: number, seconds?: number, startDate?: string} = {}
         if (formData.get("goal-pace-minutes")) {
             enteredValues.minutes = parseInt(formData.get("goal-pace-minutes")?.toString()!);
