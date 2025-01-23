@@ -1,4 +1,3 @@
-'use client'
 
 import WeeklyTrainingTable from "app/components/training-weeks";
 import WorkOutDisplay from "app/components/workout-display";
@@ -7,18 +6,24 @@ import { getActivitesFromDB } from "app/lib/actions/strava-activities";
 import { useSession } from "next-auth/react";
 import { Suspense, useEffect, useState } from "react";
 import { getUserProfile } from "app/lib/actions/actions";
+import { auth } from "auth";
+import TrainingTabs from "app/components/training-tabs";
 
 /** Page for workout display and training per week. Two different tabs */
 
-export default function page() {
+export default async function page() {
 
-    const {data:session, status} = useSession();
-    const [currentTab, setCurrentTab] = useState("Workouts"); // use to change between workout list and weekly tab
-    const [activityList, setActivityList]= useState<DatabaseActivity[]>([]); // Activity list pulled from database
-    const [userTrainingStartDate, setUserTrainingStartDate] = useState(new Date());
-    
+    const session = await auth();
 
-    /** Runs the effect once and then when email changes */
+
+    //const [currentTab, setCurrentTab] = useState("Workouts"); // use to change between workout list and weekly tab // move to a new component
+    //const [activityList, setActivityList]= useState<DatabaseActivity[]>([]); // Activity list pulled from database // get the data here then pass down as prop to the 2 components
+    //const [userTrainingStartDate, setUserTrainingStartDate] = useState(new Date()); // same idea
+
+    const activityList: DatabaseActivity[] = await getActivitesFromDB(session?.user?.email!);
+    let userTrainingStartDate: Date = (await getUserProfile(session?.user?.email!)).training_start_date
+
+    /** Runs the effect once and then when email changes 
     useEffect(() => {
         let ignore = false;
         getActivitesFromDB(session?.user?.email!).then(result => {
@@ -38,30 +43,10 @@ export default function page() {
         });
 
         return () => {ignore = true;}; //figure out if I need to return anything here
-    }, [status]); // figure out a way to make only one fetch of data
+    }, [status]); // figure out a way to make only one fetch of data */
 
     return (
-        <>
-            <div id="selection-tab" className="grid grid-cols-2 mb-10">
-                <button onClick={() => setCurrentTab("Workouts")} className={`${currentTab === "Workouts" ? 'bg-orange-300' : ''}`}>
-                    Workouts
-                </button>
-                <button onClick={() => setCurrentTab("Training")} className={`${currentTab === "Training" ? 'bg-orange-300' : ''}`}>
-                    Weekly Training
-                </button>
-            </div>
-            <Suspense fallback={<p>Loading</p>}>
-                {currentTab === "Workouts" && <WorkOutDisplay activityList={activityList}></WorkOutDisplay>}
-                {currentTab === "Training" && <WeeklyTrainingTable activityList={activityList} 
-                            userTrainingStartDate={userTrainingStartDate}
-                            email={session?.user?.email!}/>
-                }
-            </Suspense>
-            
-
-        
-        
-        </>
+        <TrainingTabs email={session?.user?.email!} activityList={activityList} userTrainingStartDate={userTrainingStartDate}></TrainingTabs>
         
     )
 }
