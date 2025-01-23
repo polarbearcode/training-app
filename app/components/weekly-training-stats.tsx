@@ -130,7 +130,7 @@ export default function WeekTrainingStats({activityList, beginDate, endDate, wee
         return () => {ignore = false};
 
 
-    }, [activityList, weeklyTraining])
+    }, [activityList])
 
     if (Object.keys(weeklyTraining).length === 0) {
         return <p>Loading</p>
