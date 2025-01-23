@@ -29,6 +29,7 @@ export async function GET(req: NextRequest) {
 
     // No code in response from Strava (maybe user hit cancel). Add handling.
     if (!code) {
+      // TODO error handling
       return NextResponse.redirect(process.env.BASE_URL!);
     }
 
@@ -51,6 +52,7 @@ export async function GET(req: NextRequest) {
       });
 
       if (response.statusText != 'OK') {
+        // TODO error handling
         return NextResponse.json({ error: 'Failed to exchange code for access token' }, { status: 500 });
       }   
 
@@ -61,13 +63,16 @@ export async function GET(req: NextRequest) {
       // Get and upload activities to database
       const processActivities =  await getStravaActivities(access_token, athlete_id, dataPullDate);
 
+      if (processActivities.error) {
+        //TODO error handling
+        return NextResponse.redirect(baseURL, {status: 500});
+      }
+
       const updateDataPullDate = await updateUserDataPullDateStrava(processActivities.updateDataPullDate, session?.user?.email!);
 
-/**      if (processActivities.error) {
-        return NextResponse.json({ error: 'Unable to get activities or unable to put them to database' }, { status: 500 });
-      } */
-
-  
+      if (updateDataPullDate.error) {
+        // TODO error handling
+      }
 
       return NextResponse.redirect(baseURL, {status:307});
 
