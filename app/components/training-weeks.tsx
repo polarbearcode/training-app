@@ -7,33 +7,39 @@ import { useEffect, useState } from "react";
 import { getUserMarathons, getUserTrainingPlan } from "app/lib/actions/actions";
 
 /** Table of weekly training 
- * Used in the training/page.tsx page
+ * Used in the training-tabs component
 */
-export default function WeeklyTrainingTable({activityList, userTrainingStartDate, email} : {
+export default function WeeklyTrainingTable({activityList, userTrainingStartDate, email, userMarathons} : {
     activityList: DatabaseActivity[];
     userTrainingStartDate: Date;
     email: string;
+    userMarathons: string[]
 }) {
 
     const [currentMarathon, setCurrentMarathon] = useState<string>('');
     const [userTrainingPlan, setUserTrainingPlan] = useState<Record<number, UserTrainingWeek>>({});
-    const [userMarathonOptions, setUserMarathonOptions] = useState<string[]>([]);
+    const [userMarathonOptions, setUserMarathonOptions] = useState<string[]>(userMarathons);
 
     useEffect(() => {
-        getUserMarathons(email).then(result => {
-            setUserMarathonOptions(result);
-            setCurrentMarathon(result[0]);
-        });
+        let ignore = false;
 
-        if (currentMarathon != '') {
-            getUserTrainingPlan(email, currentMarathon).then(result => {
-        
-                console.log(currentMarathon);
-                setUserTrainingPlan(result);
-                
-            });
-
+        if (!ignore) {
+            
+            setCurrentMarathon(userMarathonOptions[0]);
+    
+            if (currentMarathon != '') {
+                getUserTrainingPlan(email, currentMarathon).then(result => {
+            
+                    console.log(currentMarathon);
+                    setUserTrainingPlan(result);
+                    
+                });
+    
+            }
         }
+
+        return () => {ignore = false};
+        
 
     }, [currentMarathon])
 
@@ -47,6 +53,7 @@ export default function WeeklyTrainingTable({activityList, userTrainingStartDate
                     {userMarathonOptions.map((marathonName, i) => {
                         return <option key = {i}>{marathonName}</option>
                     })}
+
                 </select>
             </div>
             {weeklyIntervals.map((interval, i) => {
