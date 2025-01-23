@@ -41,7 +41,7 @@ export default function UpdateUserForm() {
             return () => {ignore = true;}; //figure out if I need to return anything here
         }, [session?.user]); 
 
-  
+
 
     return (
         <>
