@@ -11,8 +11,8 @@ export default async function Home() {
       <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
        <h1 className="text-2xl">Ultimate Training App</h1>
         <div className='grid grid-cols-4 gap-x-8'>
-            {/* Strava sign in button */}
-          <SignInStrava></SignInStrava>
+            {/* Strava sign in button
+          <SignInStrava></SignInStrava> */}
         
           {/* Github login button */}
           <SignIn></SignIn>
