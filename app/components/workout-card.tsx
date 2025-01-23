@@ -48,13 +48,3 @@ export default function WorkoutCardWrapper({
         </>
     )
 }
-
-export function WorkoutCard() {
-    return (
-        <>
-            <div className="rounded-xl bg-gray-50 p-2 shadow-sm">
-                <p>Card</p>
-            </div>
-        </>
-    )
-}
