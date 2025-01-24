@@ -2,6 +2,13 @@
 
 import { DatabaseActivity } from "../definitions";
 
+/**
+ * Generate tags for runs based on run stats
+ * @param elevation {number} elevation gain from the run in meters
+ * @param distance {number} the distance ran in meters
+ * @param speed  {number} the average speed of the run in meters/second
+ * @returns {string[]} a list of tags 
+ */
 export function analyzeRunType(elevation: number, distance: number, speed: number) : string[] {
 
     const tags = [];
@@ -49,4 +56,85 @@ function helperCategorizeSpeed(speed : number) : string {
  */
 function helperSpeedToMinPerMile(speed : number) : number {
     return 26.8224 / speed ;
+}
+
+/**
+ * Go through a list of activites and breakdown percentages of runs
+ * at different paces. Ignores non run activities
+ * @param activityList {DatabaseActivity[]} list of activities
+ * @param goalPace {number} the user's goal pace min/mile in seconds. Used to calculate the pace of each category
+ * @returns {Record<string, number>} percentages for each category
+ */
+export function analyzeRunPercentages(activityList: DatabaseActivity[], goalPace: number): {
+    easy: number, 
+    aerobic: number, 
+    hm: number, 
+    mp: number,
+    '5K': number,
+    '10K': number
+} {
+    
+    let easyTotal: number = 0;
+    let aerobicTotal: number = 0;
+    let hmTotal: number = 0;
+    let mpTotal: number = 0;
+    let fiveKTotal: number = 0;
+    let tenKTotal: number = 0;
+
+    let totalMiles: number = 0;
+
+    const easyPace: number = goalPace + 60;
+    const aerobicPace: number = goalPace + 30;
+
+    const hmPace: number = goalPace - 30;
+    const tenKPace: number = hmPace - 30;
+    const fiveKPace: number = tenKPace - 30;
+
+    // calculate the distances per pace and get total distance of all runs
+    for (let i = 0; i < activityList.length; i++) {
+        const curActivity: DatabaseActivity = activityList[i];
+
+        // Skip if not a run
+        if (curActivity.activitytype != 'Run') {
+            continue;
+        }
+
+        totalMiles += curActivity.distance;
+
+        const activityLaps: Record<string, Record<string, number>> = JSON.parse(JSON.stringify(curActivity.laps));
+
+        // calculate which pace distance per lap falls (each mile)
+        for (const key in activityLaps) {
+            const speed: number = activityLaps[key].average_speed;
+            const addDistance: number = activityLaps[key].distance; 
+            
+            switch(true) {
+                case speed <= fiveKPace:
+                    fiveKTotal += addDistance
+                    break;
+                case speed <= tenKPace:
+                    tenKTotal += addDistance
+                    break;
+                case speed <= hmPace:
+                    hmTotal += addDistance
+                    break;
+                case speed >= easyPace:
+                    easyTotal += addDistance;
+                    break;
+                case speed >= aerobicPace:
+                    aerobicTotal += addDistance;
+                    break;
+                default:
+                    mpTotal += addDistance;
+            };
+        };
+        
+    };
+
+    return {easy: easyTotal / totalMiles, aerobic: aerobicTotal / totalMiles, mp: mpTotal / totalMiles, hm: hmTotal / totalMiles,
+         '5K': fiveKTotal/ totalMiles, '10K': tenKTotal / totalMiles
+    }
+
+
+
 }
