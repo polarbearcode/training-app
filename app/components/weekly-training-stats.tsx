@@ -7,15 +7,16 @@ import { DatabaseActivity, UserTrainingWeek } from "app/lib/definitions"
 import { useEffect, useState } from "react";
 import { ArrowDownCircleIcon } from "@heroicons/react/16/solid";
 import { ArrowUpCircleIcon } from "@heroicons/react/24/outline";
-import { analyzeRunType } from "app/lib/ai/run-analysis";
+import { analyzeRunPercentages, analyzeRunType } from "app/lib/ai/run-analysis";
 import { convertMetersToMiles } from "app/lib/utils";
 
-export default function WeekTrainingStats({activityList, beginDate, endDate, weekNum, weeklyTraining} : {
+export default function WeekTrainingStats({activityList, beginDate, endDate, weekNum, weeklyTraining, goalPace} : {
     activityList: DatabaseActivity[];
     beginDate: Date;
     endDate: Date;
     weekNum: number;
     weeklyTraining: Record<number, UserTrainingWeek>;
+    goalPace: number;
 }) {
 
    
@@ -28,6 +29,7 @@ export default function WeekTrainingStats({activityList, beginDate, endDate, wee
     const [totalDistance, setTotalDistance] = useState<number>(0);
     const [totalXtrain, setTotalXTrain] = useState<number>(0);
     const [totalHills, setTotalHills] = useState<number>(0);
+    const [runTypePercents, setRunTypePercents] = useState<Record<string, number>>({});
 
     // Gets all the activities in the activityList that fall between beginDate and endDate
     function filterActivitesByDate() {
@@ -84,6 +86,12 @@ export default function WeekTrainingStats({activityList, beginDate, endDate, wee
 
     }
 
+    function processPercents() {
+        setRunTypePercents(analyzeRunPercentages(activitiesWithinDate, goalPace));
+    }
+
+
+
 
     
     function toggleHide() {
@@ -125,6 +133,7 @@ export default function WeekTrainingStats({activityList, beginDate, endDate, wee
         if (!ignore) {
             filterActivitesByDate();
             processStats();
+            processPercents();
         };
 
         return () => {ignore = false};

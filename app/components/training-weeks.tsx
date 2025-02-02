@@ -9,11 +9,12 @@ import { getUserMarathons, getUserTrainingPlan } from "app/lib/actions/actions";
 /** Table of weekly training 
  * Used in the training-tabs component
 */
-export default function WeeklyTrainingTable({activityList, userTrainingStartDate, email, userMarathons} : {
+export default function WeeklyTrainingTable({activityList, userTrainingStartDate, email, userMarathons, goalPace} : {
     activityList: DatabaseActivity[];
     userTrainingStartDate: Date;
     email: string;
-    userMarathons: string[]
+    userMarathons: string[];
+    goalPace: number;
 }) {
 
     const [currentMarathon, setCurrentMarathon] = useState<string>('');
@@ -64,8 +65,8 @@ export default function WeeklyTrainingTable({activityList, userTrainingStartDate
                             endDate={interval[1]} 
                             weekNum={i + 1}
                             weeklyTraining={userTrainingPlan}
-                            >
-                        </WeekTrainingStats>
+                            goalPace={goalPace}
+                            />
                     </div>
             })}
         </>

@@ -7,11 +7,12 @@ import { DatabaseActivity } from "app/lib/definitions";
 
 /** Used in the training/page.tsx */
 
-export default function TrainingTabs({email, activityList, userTrainingStartDate, userMarathons} : {
+export default function TrainingTabs({email, activityList, userTrainingStartDate, userMarathons, goalPace} : {
     email: string;
     activityList: DatabaseActivity[];
     userTrainingStartDate: Date;
-    userMarathons: string[]
+    userMarathons: string[];
+    goalPace: number;
 }) {
     
     const [currentTab, setCurrentTab] = useState("Workouts");
@@ -31,6 +32,7 @@ export default function TrainingTabs({email, activityList, userTrainingStartDate
                 userTrainingStartDate={userTrainingStartDate}
                 email={email}
                 userMarathons={userMarathons}
+                goalPace={goalPace}
             />
             }
         
