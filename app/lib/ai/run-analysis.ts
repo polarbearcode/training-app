@@ -1,6 +1,7 @@
 /** Functions to analyze run activities */
 
 import { DatabaseActivity } from "../definitions";
+import { convertMinutesToMetersPerSec } from "../utils";
 
 /**
  * Generate tags for runs based on run stats
@@ -83,12 +84,25 @@ export function analyzeRunPercentages(activityList: DatabaseActivity[], goalPace
 
     let totalMiles: number = 0;
 
-    const easyPace: number = goalPace + 60;
-    const aerobicPace: number = goalPace + 30;
+    
 
-    const hmPace: number = goalPace - 30;
-    const tenKPace: number = hmPace - 30;
-    const fiveKPace: number = tenKPace - 30;
+    let easyPace: number = goalPace + 1;
+    let aerobicPace: number = goalPace + 0.5;
+
+    let hmPace: number = goalPace - 0.5;
+    let tenKPace: number = hmPace - 0.5;
+    let fiveKPace: number = tenKPace - 0.5;
+
+    easyPace = convertMinutesToMetersPerSec(easyPace);
+    aerobicPace = convertMinutesToMetersPerSec(aerobicPace);
+    hmPace = convertMinutesToMetersPerSec(hmPace);
+    tenKPace = convertMinutesToMetersPerSec(tenKPace);
+    fiveKPace = convertMinutesToMetersPerSec(fiveKPace);
+    const mp = convertMinutesToMetersPerSec(goalPace);
+
+    console.log(easyPace, aerobicPace, hmPace, tenKPace, fiveKPace, mp);
+
+
 
     // calculate the distances per pace and get total distance of all runs
     for (let i = 0; i < activityList.length; i++) {
@@ -107,29 +121,33 @@ export function analyzeRunPercentages(activityList: DatabaseActivity[], goalPace
         for (const key in activityLaps) {
             const speed: number = activityLaps[key].average_speed;
             const addDistance: number = activityLaps[key].distance; 
+
+      
             
             switch(true) {
-                case speed <= fiveKPace:
+                case speed >= fiveKPace:
                     fiveKTotal += addDistance
                     break;
-                case speed <= tenKPace:
+                case speed >= tenKPace:
                     tenKTotal += addDistance
                     break;
-                case speed <= hmPace:
+                case speed >= hmPace:
                     hmTotal += addDistance
                     break;
-                case speed >= easyPace:
-                    easyTotal += addDistance;
+                case speed >= mp:
+                    mpTotal += addDistance;
                     break;
                 case speed >= aerobicPace:
                     aerobicTotal += addDistance;
                     break;
                 default:
-                    mpTotal += addDistance;
+                  
+                    easyTotal += addDistance;
             };
         };
         
     };
+
 
     return {easy: easyTotal / totalMiles, aerobic: aerobicTotal / totalMiles, mp: mpTotal / totalMiles, hm: hmTotal / totalMiles,
          '5K': fiveKTotal/ totalMiles, '10K': tenKTotal / totalMiles
