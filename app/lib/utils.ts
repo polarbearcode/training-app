@@ -115,3 +115,12 @@ export function createWeekDateIntervals(beginDate: Date, numIntervals: number) :
 export function convertMetersToMiles(meters: number) : number {
     return Math.round(meters / METERS_TO_MILES_DIVISOR * 100) / 100;
 }
+
+/**
+ * Convert a minutes/mile like 6.7 min/mile to equivalent meters per second. 
+ * @param minutes {number} minutes per mile. 
+ * @returns {number} the equivalent meters/s value
+ */
+export function convertMinutesToMetersPerSec(minutes: number) : number {
+    return 1609.34 / (minutes * 60)
+}
