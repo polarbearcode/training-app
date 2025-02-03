@@ -1,4 +1,5 @@
 
+import CustomSessionProvider from "app/components/custom-session-provider"
 import UpdateUserForm from "app/components/user-profile/update-user-info-form"
 
 
@@ -8,8 +9,10 @@ import UpdateUserForm from "app/components/user-profile/update-user-info-form"
 export default async function page() {
         
     return (
-      
-            <UpdateUserForm></UpdateUserForm>
+      <CustomSessionProvider>
+        <UpdateUserForm></UpdateUserForm>
+      </CustomSessionProvider>
+            
       
         
     )
