@@ -18,6 +18,7 @@ export async function GET(req: NextRequest) {
 
   const dataPullDate: number|undefined = user.strava_data_pull_date;
 
+
   // Figure out next auth, could implement check if token is not expired to save a request
 
 
