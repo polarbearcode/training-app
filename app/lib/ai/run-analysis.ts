@@ -100,7 +100,7 @@ export function analyzeRunPercentages(activityList: DatabaseActivity[], goalPace
     fiveKPace = convertMinutesToMetersPerSec(fiveKPace);
     const mp = convertMinutesToMetersPerSec(goalPace);
 
-    console.log(easyPace, aerobicPace, hmPace, tenKPace, fiveKPace, mp);
+    //console.log(easyPace, aerobicPace, hmPace, tenKPace, fiveKPace, mp);
 
 
 
@@ -116,6 +116,7 @@ export function analyzeRunPercentages(activityList: DatabaseActivity[], goalPace
         totalMiles += curActivity.distance;
 
         const activityLaps: Record<string, Record<string, number>> = JSON.parse(JSON.stringify(curActivity.laps));
+       
 
         // calculate which pace distance per lap falls (each mile)
         for (const key in activityLaps) {
