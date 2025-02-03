@@ -120,7 +120,7 @@ export async function registerUser(
 export async function getUserProfile(email: string) : Promise<UserProfileDataBase> {
 
   const defaultReturn = {email: email, pace_minutes: 0, pace_seconds: 0, 
-    training_start_date: new Date(), strava_data_pull_date: new Date().getTime()};
+    training_start_date: new Date(), strava_data_pull_date: new Date("2024-10-01").getTime()};
    
   
   try {
