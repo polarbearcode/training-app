@@ -46,8 +46,10 @@ export async function getStravaActivities(access_token: string, athlete_id: stri
     try {
         const payload = await strava.athlete.listActivities({access_token: access_token, id: athlete_id, 
             per_page:100, after: Math.round(pullDataFrom)});
-        
-        process = await saveActivities(payload);
+
+        process = await saveActivities(payload, access_token);
+
+       
         return {updateDataPullDate: process.updateDataPullDate, message: "Retrieved list of activities and saved it to database"};
     } catch (error) {
         console.log(error);
@@ -62,18 +64,26 @@ export async function getStravaActivities(access_token: string, athlete_id: stri
  * track date of most recent activity if no errors uploading to the database
  * or the earliest activity that could not be uploaded. 
  * @param payload    {Array}    list of Strava activities returned by listActivities
+ * @param access_token {string} the user's Strava access token. 
  * @return {udpateDataPullDate: number, message: string} success or error message containing activities not uploaded
  */
-async function saveActivities(payload: Array<StravaActivity>): Promise<{updateDataPullDate: number, message: string}> {
+async function saveActivities(payload: Array<StravaActivity>, access_token: string): Promise<{updateDataPullDate: number, message: string}> {
    
     const unableToUpload : string[] = []; // make this a stack?
 
     let updateDataPullDate: Date= new Date(); // used for comparison
 
     for (let i = 0; i < payload.length; i++) {
-        const curActivity = payload[i];
+        const curActivity: StravaActivity = payload[i];
+
 
         try {
+
+            if (curActivity.type === "Run") {
+                const activityWithLaps = await strava.activities.listLaps({access_token: access_token, id: parseInt(curActivity.id)});
+                console.log("here");
+                curActivity["laps"] = activityWithLaps.lap;
+            }
             
             uploadActivityToDB(curActivity, client);
 
@@ -83,7 +93,8 @@ async function saveActivities(payload: Array<StravaActivity>): Promise<{updateDa
 
             const curActivityDate = new Date(curActivity.start_date);
 
-            // update if activity is earlier
+
+            // update if activity is earlier so it will end up being earliest unuploaded activity
             if (curActivityDate < updateDataPullDate) {
                 updateDataPullDate = curActivityDate;
             }
@@ -122,14 +133,22 @@ async function uploadActivityToDB(activity: StravaActivity, client: VercelPoolCl
     const maxSpeed = activity.max_speed;
     const averageCadence = activity.average_cadence;
     const averageHeartrate = activity.average_heartrate;
+
+    let laps = JSON.stringify("");
+
+    if (activity.laps) {
+        laps = JSON.stringify(activity.laps);
+    }
     try {
         await client.sql`
         INSERT INTO activity (activityID, athleteID, activityType, year, month, day, distance, 
-            totalElevationGain, averageSpeed, maxSpeed, averageCadence, averageHeartrate, email)
+            totalElevationGain, averageSpeed, maxSpeed, averageCadence, averageHeartrate, email, laps)
         VALUES(${activityID}, ${athleteID}, ${activityType}, ${year}, ${month}, ${day}, ${distance}, 
-                ${totalElevationGain}, ${averageSpeed}, ${maxSpeed}, ${averageCadence}, ${averageHeartrate}, ${email})
+                ${totalElevationGain}, ${averageSpeed}, ${maxSpeed}, ${averageCadence}, ${averageHeartrate}, ${email}, ${laps})
         ON CONFLICT DO NOTHING; 
     `
+
+   
     return {message: "Activity uploaded"}
     } catch (error) {
         console.log(error);
@@ -151,7 +170,7 @@ export async function getActivitesFromDB(email: string): Promise<DatabaseActivit
         WHERE email=${email};
         `;
 
-        console.log(email); 
+        
 
         return activities.rows;
 
@@ -189,34 +208,5 @@ export async function updateUserDataPullDateStrava(updateDataPullDate: number, e
     }
 }
 
-/**
- * Update the data pulled date for the user in the database. 
- * @param email {string} the user's email in the database
- * @param dataPullDate {number} date in epoch time
- * @returns {Promise<error?: string>} An error message if there is an error or an empty {}.
- */
-async function updateUserStravaDataPullDate(email: string, dataPullDate: number) : Promise<{error?:string}>  {
-    try {
 
-        const checkIfEmailExists = await client.sql`
-            SELECT email FROM UserProfile
-            WHERE email=${email};
-        `;
-
-        if (checkIfEmailExists.rows) {
-            client.sql`
-                UPDATE UserProfile 
-                SET strava_data_date=${dataPullDate}
-                WHERE email=${email};
-            `;
-
-        } else {
-            return {error: `User with email: ${email} not in database`};
-        }
-
-        return {};
-    } catch (error) {
-        return {error: `Could not update user's data pull date for email: ${email}`}
-    }
-}
   
