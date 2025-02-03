@@ -20,8 +20,8 @@ export type StravaActivity = {
     total_elevation_gain: number;
     average_speed: number;
     max_speed: number;
-    average_cadence: number;
-    average_heartrate: number;
+    average_cadence?: number;
+    average_heartrate?: number;
     [key:string]: unknown;
 }
 
@@ -38,6 +38,7 @@ export type DatabaseActivity = {
     maxspeed: number;
     averagecadence: number;
     averageheartrate: number;
+    laps: JSON;
     email: string;
 
 }
