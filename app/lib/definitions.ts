@@ -20,6 +20,7 @@ export type StravaActivity = {
     total_elevation_gain: number;
     average_speed: number;
     max_speed: number;
+    laps?: Array<Record<string, number | Date | string | boolean | Record<string, number>>>[];
     average_cadence?: number;
     average_heartrate?: number;
     [key:string]: unknown;

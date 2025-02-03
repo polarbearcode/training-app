@@ -81,8 +81,8 @@ async function saveActivities(payload: Array<StravaActivity>, access_token: stri
 
             if (curActivity.type === "Run") {
                 const activityWithLaps = await strava.activities.listLaps({access_token: access_token, id: parseInt(curActivity.id)});
-                console.log("here");
-                curActivity["laps"] = activityWithLaps.lap;
+
+                curActivity["laps"] = activityWithLaps
             }
             
             uploadActivityToDB(curActivity, client);
@@ -138,6 +138,7 @@ async function uploadActivityToDB(activity: StravaActivity, client: VercelPoolCl
 
     if (activity.laps) {
         laps = JSON.stringify(activity.laps);
+        
     }
     try {
         await client.sql`
