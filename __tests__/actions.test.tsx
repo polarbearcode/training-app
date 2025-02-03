@@ -8,6 +8,6 @@ test("GetActivities pulls activities by email", async() =>  {
 test("Gets error with wrong athlete id", async () => {
     const accessToken = "change me" //update each test run
     const athleteID = "123456" //random id
-    const messages = await getStravaActivities(accessToken, athleteID);
-    expect(messages.error).not.toBeNull();
+    const messages = await getStravaActivities(accessToken, athleteID, new Date().getTime());
+    expect(messages.message).not.toBeNull();
 })
