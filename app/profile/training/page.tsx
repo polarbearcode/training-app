@@ -17,13 +17,24 @@ export default async function page() {
 
 
     const activityList: DatabaseActivity[] = await getActivitesFromDB(session?.user?.email!);
-    const userTrainingStartDate: Date = (await getUserProfile(session?.user?.email!)).training_start_date;
+
+    activityList.sort((activityA, acvtivityB) => (acvtivityB.year * 50 + acvtivityB.month + acvtivityB.day) - (activityA.year * 50 + activityA.month + activityA.day));
+    const userTrainingStats = await getUserProfile(session?.user?.email!);
+    const userTrainingStartDate: Date = userTrainingStats.training_start_date;
+    const userGoalPace: number = userTrainingStats.pace_minutes + (userTrainingStats.pace_seconds / 60);
     const userMarathons: string[] = await getUserMarathons(session?.user?.email!);
 
 
 
     return (
-        <TrainingTabs email={session?.user?.email!} activityList={activityList} userTrainingStartDate={userTrainingStartDate} userMarathons={userMarathons}></TrainingTabs>
+        <TrainingTabs 
+            email={session?.user?.email!} 
+            activityList={activityList} 
+            userTrainingStartDate={userTrainingStartDate} 
+            userMarathons={userMarathons}
+            goalPace={userGoalPace}
+        />
+            
         
     )
 }
