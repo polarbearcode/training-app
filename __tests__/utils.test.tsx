@@ -1,4 +1,4 @@
-import { processDate, numberDateToString, createWeekDateIntervals } from "app/lib/utils";
+import { processDate, numberDateToString, createWeekDateIntervals, convertFloatToMinutesSeconds } from "app/lib/utils";
 
 
 test('ProcessedDate Returns year, month, day', () => {
@@ -45,4 +45,8 @@ test("Create 6 week intervals", () => {
     const e6 = new Date("1/11/2025");
 
     expect(createWeekDateIntervals(b1, 6)).toEqual([[b1, e1], [b2, e2], [b3, e3], [b4, e4], [b5, e5], [b6, e6]]);
+})
+
+test("Convert float to readable time string", () => {
+    expect(convertFloatToMinutesSeconds(5.36)).toBe("5:22");
 })
