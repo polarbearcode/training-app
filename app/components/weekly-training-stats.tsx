@@ -9,6 +9,7 @@ import { ArrowDownCircleIcon } from "@heroicons/react/16/solid";
 import { ArrowUpCircleIcon } from "@heroicons/react/24/outline";
 import { analyzeRunPercentages, analyzeRunType } from "app/lib/ai/run-analysis";
 import { convertMetersToMiles } from "app/lib/utils";
+import { RunPercentages } from "./percentage-display";
 
 export default function WeekTrainingStats({activityList, beginDate, endDate, weekNum, weeklyTraining, goalPace} : {
     activityList: DatabaseActivity[];
@@ -22,9 +23,10 @@ export default function WeekTrainingStats({activityList, beginDate, endDate, wee
    
     // for toggling showing stats
 
+
     const [hide, setHide] = useState(true);
 
-    const [activitiesWithinDate, setActivitiesWithinDate] = useState<DatabaseActivity[]>([]);
+   
     const [totalRuns, setTotalRuns]  = useState<number>(0);
     const [totalDistance, setTotalDistance] = useState<number>(0);
     const [totalXtrain, setTotalXTrain] = useState<number>(0);
@@ -42,23 +44,23 @@ export default function WeekTrainingStats({activityList, beginDate, endDate, wee
             const curActivityDate: Date = new Date(curActivity.year, curActivity.month - 1, curActivity.day);
             
             if (curActivityDate >= beginDate && curActivityDate <= endDate) {
-                activitiesWithinDate.push(curActivity);
+                res.push(curActivity);
             }
-        };
+        }
 
-        setActivitiesWithinDate(res);
+        return res;
     }
 
     // Create the summary stats for the activities that fall in the data range between beginDate and endDate
-    function processStats() {
+    function processStats(activitiesWithinDate: DatabaseActivity[]) {
 
         let countTotalDistance = 0;
         let countTotalRuns = 0;
         let countHills = 0;
         let countXTrain = 0;
 
-
         for (let i = 0; i < activitiesWithinDate.length; i++) {
+
 
             const curActivity: DatabaseActivity = activitiesWithinDate[i]; 
     
@@ -79,6 +81,7 @@ export default function WeekTrainingStats({activityList, beginDate, endDate, wee
 
         }
 
+
         setTotalDistance(countTotalDistance);
         setTotalRuns(countTotalRuns);
         setTotalXTrain(countXTrain);
@@ -86,13 +89,9 @@ export default function WeekTrainingStats({activityList, beginDate, endDate, wee
 
     }
 
-    function processPercents() {
+    function processPercents(activitiesWithinDate: DatabaseActivity[]) {
         setRunTypePercents(analyzeRunPercentages(activitiesWithinDate, goalPace));
     }
-
-
-
-
     
     function toggleHide() {
         setHide(!hide);
@@ -115,8 +114,6 @@ export default function WeekTrainingStats({activityList, beginDate, endDate, wee
 
         let val: UserTrainingWeek = weeklyTraining[week]; // undefined if week is beyond training weeks like 17 for 16 week plan
 
-        console.log(val);
-
         if (val) {
             const returnVal = val[attr as keyof typeof val];
 
@@ -131,22 +128,20 @@ export default function WeekTrainingStats({activityList, beginDate, endDate, wee
     useEffect(() => {
         let ignore = false;
         if (!ignore) {
-            filterActivitesByDate();
-            processStats();
-            processPercents();
+            const activitiesWithinDate = filterActivitesByDate();
+            processStats(activitiesWithinDate);
+            processPercents(activitiesWithinDate);
         };
 
         return () => {ignore = false};
 
-
     }, [activityList])
+
+
 
     if (Object.keys(weeklyTraining).length === 0) {
         return <p>Loading</p>
     }
-
-
-
 
 
     return (
@@ -203,8 +198,10 @@ export default function WeekTrainingStats({activityList, beginDate, endDate, wee
                     </tbody>
 
                 </table>
-        
+
             }
+
+            {!hide && <RunPercentages percentages={runTypePercents}/>}
 
             
         </>
